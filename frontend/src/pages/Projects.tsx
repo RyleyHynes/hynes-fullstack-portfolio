@@ -1,5 +1,8 @@
 import { projects } from '@/data/profile'
 
+/**
+ * Project gallery showcasing full-stack sample apps.
+ */
 export default function Projects() {
   return (
     <section className="grid gap-6">
