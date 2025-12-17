@@ -9,14 +9,14 @@ public class Peak
     public string Country {get;set;} = string.Empty;
     public string Region {get;set;} = string.Empty;
     public string DifficultyRating {get;set;} = string.Empty;
-    public ICollection<Route> Routes {get;set;} = new List<Route>();
+    public ICollection<PeakRoute> Routes {get;set;} = new List<PeakRoute>();
     public string Notes {get;set;} = string.Empty;
     public DateTime CreatedAt {get;set;} = DateTime.UtcNow;
     public DateTime UpdatedAt {get;set;} = DateTime.UtcNow;
 
 }
 
-public class Route
+public class PeakRoute
 {
     public Guid Id { get; set;}
     public Guid PeakId {get;set;}

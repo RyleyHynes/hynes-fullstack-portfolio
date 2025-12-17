@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PeakPlanner.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b2e92e58bae79c97321626f9b8c1b8afaa88cc1d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5157368b407045c46e65f702ff3f730281bc9a8e")]
 [assembly: System.Reflection.AssemblyProductAttribute("PeakPlanner.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PeakPlanner.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
