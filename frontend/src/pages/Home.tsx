@@ -27,12 +27,19 @@ export default function Home() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {projects.slice(0, 3).map((p, i) => (
+        {projects.slice(0, 3).map((p, i) => {
+          const isLive = p.isLive === true
+          const primaryLink = p.links.find(link => link.label === 'View Project') ?? p.links[0]
+          const isInternal = primaryLink?.href.startsWith('/')
+          return (
           <motion.article
             key={p.name}
-            className="card card-coming-soon p-6 text-slate-900 dark:text-slate-100"
-            aria-disabled="true"
-            title="Live demos coming soon"
+            className={[
+              'card p-6 text-slate-900 dark:text-slate-100',
+              isLive ? '' : 'card-coming-soon'
+            ].join(' ')}
+            aria-disabled={isLive ? undefined : true}
+            title={isLive ? undefined : 'Live demos coming soon'}
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
@@ -47,8 +54,22 @@ export default function Home() {
                 </span>
               ))}
             </div>
+            {isLive && primaryLink ? (
+              <div className="mt-4">
+                {isInternal ? (
+                  <Link className="navlink" to={primaryLink.href}>
+                    {primaryLink.label}
+                  </Link>
+                ) : (
+                  <a className="navlink" href={primaryLink.href} target="_blank" rel="noreferrer">
+                    {primaryLink.label}
+                  </a>
+                )}
+              </div>
+            ) : null}
           </motion.article>
-        ))}
+          )
+        })}
       </div>
     </section>
   )

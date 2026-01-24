@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Celium.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1af2322e9a1697aac03195555d95b5e1ab14a861")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+345dba1b020b7c3b73e545eb73e00b4c935611cc")]
 [assembly: System.Reflection.AssemblyProductAttribute("Celium.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Celium.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
