@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../buildMultiTargeting/PeakPlanner.Api.props" />
-</Project>
