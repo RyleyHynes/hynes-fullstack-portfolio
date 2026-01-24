@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using RouteModel = Celium.Api.Models.Route;
 
 var builder = WebApplication.CreateBuilder(args);
+var defaultLandscapeTypeId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+var defaultRegionId = Guid.Parse("00000000-0000-0000-0000-000000000010");
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -70,13 +72,13 @@ routes.MapPost("/", async (CreateRouteRequest request, CeliumDbContext db) =>
         MinElevationFt = request.MinElevationFt,
         EstimatedTimeMinutes = request.EstimatedTimeMinutes,
         LoopType = request.LoopType,
-        RouteGeometry = request.RouteGeometry,
+        RouteGeometry = "LINESTRING(-105.0 39.7, -105.1 39.8)",
         StartLatitude = request.StartLatitude,
         StartLongitude = request.StartLongitude,
         EndLatitude = request.EndLatitude,
         EndLongitude = request.EndLongitude,
-        LandscapeTypeId = request.LandscapeTypeId,
-        RegionId = request.RegionId,
+        LandscapeTypeId = defaultLandscapeTypeId,
+        RegionId = defaultRegionId,
         Status = request.Status,
         CreatedAt = now,
         UpdatedAt = now,
@@ -108,13 +110,13 @@ routes.MapPut("/{id:guid}", async (Guid id, UpdateRouteRequest request, CeliumDb
     route.MinElevationFt = request.MinElevationFt;
     route.EstimatedTimeMinutes = request.EstimatedTimeMinutes;
     route.LoopType = request.LoopType;
-    route.RouteGeometry = request.RouteGeometry;
+    route.RouteGeometry = "LINESTRING(-105.0 39.7, -105.1 39.8)";
     route.StartLatitude = request.StartLatitude;
     route.StartLongitude = request.StartLongitude;
     route.EndLatitude = request.EndLatitude;
     route.EndLongitude = request.EndLongitude;
-    route.LandscapeTypeId = request.LandscapeTypeId;
-    route.RegionId = request.RegionId;
+    route.LandscapeTypeId = defaultLandscapeTypeId;
+    route.RegionId = defaultRegionId;
     route.Status = request.Status;
     route.PublishedAt = request.PublishedAt;
     route.UpdatedAt = DateTime.UtcNow;

@@ -15,12 +15,9 @@ public record UpdateRouteRequest(
     int? MinElevationFt,
     int? EstimatedTimeMinutes,
     LoopType LoopType,
-    string RouteGeometry,
     double StartLatitude,
     double StartLongitude,
     double EndLatitude,
     double EndLongitude,
-    Guid LandscapeTypeId,
-    Guid RegionId,
     RouteStatus Status,
     DateTime? PublishedAt);

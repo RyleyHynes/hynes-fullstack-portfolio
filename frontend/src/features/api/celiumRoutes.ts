@@ -30,7 +30,10 @@ export type RouteModel = {
   publishedAt?: string | null
 }
 
-export type CreateRoutePayload = Omit<RouteModel, 'id' | 'createdAt' | 'updatedAt'>
+export type CreateRoutePayload = Omit<
+  RouteModel,
+  'id' | 'createdAt' | 'updatedAt' | 'landscapeTypeId' | 'regionId' | 'routeGeometry'
+>
 export type UpdateRoutePayload = CreateRoutePayload
 
 const resolveBaseUrl = () => (

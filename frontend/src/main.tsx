@@ -11,6 +11,7 @@ import App from './app/App'
 /** 
  * Style Imports
  */
+import 'leaflet/dist/leaflet.css'
 import './index.css'
 import './styles/global.scss'
 

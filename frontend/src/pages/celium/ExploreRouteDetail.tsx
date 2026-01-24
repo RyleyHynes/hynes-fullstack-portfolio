@@ -24,13 +24,10 @@ type RouteFormState = {
   minElevationFt: string
   estimatedTimeMinutes: string
   loopType: LoopType
-  routeGeometry: string
   startLatitude: string
   startLongitude: string
   endLatitude: string
   endLongitude: string
-  landscapeTypeId: string
-  regionId: string
   status: RouteStatus
   publishedAt: string
 }
@@ -69,13 +66,10 @@ export default function ExploreRouteDetail() {
         minElevationFt: data.minElevationFt?.toString() ?? '',
         estimatedTimeMinutes: data.estimatedTimeMinutes?.toString() ?? '',
         loopType: data.loopType,
-        routeGeometry: data.routeGeometry,
         startLatitude: data.startLatitude.toString(),
         startLongitude: data.startLongitude.toString(),
         endLatitude: data.endLatitude.toString(),
         endLongitude: data.endLongitude.toString(),
-        landscapeTypeId: data.landscapeTypeId,
-        regionId: data.regionId,
         status: data.status,
         publishedAt: data.publishedAt ?? '',
       })
@@ -112,13 +106,10 @@ export default function ExploreRouteDetail() {
         minElevationFt: draft.minElevationFt ? Number(draft.minElevationFt) : null,
         estimatedTimeMinutes: draft.estimatedTimeMinutes ? Number(draft.estimatedTimeMinutes) : null,
         loopType: draft.loopType,
-        routeGeometry: draft.routeGeometry,
         startLatitude: Number(draft.startLatitude),
         startLongitude: Number(draft.startLongitude),
         endLatitude: Number(draft.endLatitude),
         endLongitude: Number(draft.endLongitude),
-        landscapeTypeId: draft.landscapeTypeId,
-        regionId: draft.regionId,
         status: draft.status,
         publishedAt: draft.publishedAt ? new Date(draft.publishedAt).toISOString() : null,
       })
@@ -313,15 +304,6 @@ export default function ExploreRouteDetail() {
                 required
               />
             </div>
-          </div>
-          <div className="grid gap-2">
-            <label className="text-xs text-slate-500">Route geometry</label>
-            <textarea
-              className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
-              rows={3}
-              value={draft.routeGeometry}
-              onChange={(event) => handleChange('routeGeometry', event.target.value)}
-            />
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <button className="btn-primary" type="submit">Save changes</button>
