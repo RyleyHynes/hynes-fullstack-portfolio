@@ -47,3 +47,7 @@ lerna-debug.log*
 
 # Local ASP.NET settings
 backend/Celium.Api/appsettings.Development.json
+
+# .NET build outputs
+**/bin/
+**/obj/
