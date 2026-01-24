@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/Celium.Api.props" />
-</Project>
