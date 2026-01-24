@@ -51,3 +51,6 @@ backend/Celium.Api/appsettings.Development.json
 # .NET build outputs
 **/bin/
 **/obj/
+
+# EF Core migrations (not tracked for this repo)
+backend/Celium.Api/Migrations/
