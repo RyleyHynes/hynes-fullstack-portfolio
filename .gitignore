@@ -45,3 +45,12 @@ yarn-debug.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Local ASP.NET settings
+backend/Celium.Api/appsettings.Development.json
+
+# .NET build outputs
+**/bin/
+**/obj/
+
+# EF Core migrations (not tracked for this repo)
+backend/Celium.Api/Migrations/

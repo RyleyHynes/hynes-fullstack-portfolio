@@ -1,41 +1,63 @@
-import { useState } from 'react'
 import { profile } from '@/data/profile'
+import { Mail, Phone, Github, Linkedin } from 'lucide-react'
 
+/**
+ * Contact options supporting direct outreach across channels.
+ */
 export default function Contact() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [msg, setMsg] = useState('')
-  const valid = name.trim().length > 1 && /.+@.+\..+/.test(email) && msg.trim().length > 4
+  /**
+   * Normalized list of connection methods and their associated icons/links.
+   */
+  const contactLinks = [
+    { label: 'Phone', value: profile.phone, href: `tel:${profile.phone.replace(/[^0-9+]/g, '')}`, icon: Phone },
+    { label: 'Email', value: profile.email, href: `mailto:${profile.email}`, icon: Mail },
+    { label: 'LinkedIn', value: '@ryleyhynes', href: profile.linkedin, icon: Linkedin },
+    { label: 'GitHub', value: '@RyleyHynes', href: profile.github, icon: Github },
+  ] as const
 
   return (
-    <section className="grid gap-8 max-w-xl text-slate-900 dark:text-slate-100">
-      <header>
-        <h2 className="section-title">Contact</h2>
-        <p className="mt-2 text-slate-600 dark:text-slate-300">Want to collaborate or chat? Email is best.</p>
+    <section className="grid gap-10 text-slate-900 dark:text-slate-100">
+      <header className="grid gap-4">
+        <div>
+          <h2 className="section-title">Contact</h2>
+          <p className="mt-2 text-slate-600 dark:text-slate-300 max-w-3xl">
+            Need a product-minded engineer who ships polished experiences fast? Reach me directly on any channel below and I’ll reply quickly
+            with next steps or a portfolio walkthrough.
+          </p>
+        </div>
+        <div className="card p-6 grid gap-4">
+          <h3 className="text-lg font-semibold">Ways I can help</h3>
+          <div className="grid sm:grid-cols-4 gap-3 text-sm text-slate-600 dark:text-slate-300">
+            {['UI engineering', 'API integration', 'Testing & QA', 'DevOps enablement'].map((item) => (
+              <div key={item} className="rounded-xl px-3 py-2 text-center font-medium bg-gradient-to-r from-slate-100 to-slate-50 dark:from-white/10 dark:to-white/5 border border-slate-200/70 dark:border-white/10 shadow-sm">
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
       </header>
 
-      <form
-        onSubmit={(e) => { e.preventDefault(); window.location.href = `mailto:${profile.email}?subject=Portfolio%20Inquiry%20from%20${encodeURIComponent(name)}&body=${encodeURIComponent(msg + '\n\nFrom: ' + email)}` }}
-        className="card p-6 grid gap-4 text-slate-900 dark:text-slate-100"
-      >
-        <label className="grid gap-1 text-sm">
-          <span>Name</span>
-          <input className="border rounded-xl px-3 py-2 bg-white/80 dark:bg-slate-950/60" value={name} onChange={e=>setName(e.target.value)} required />
-        </label>
-        <label className="grid gap-1 text-sm">
-          <span>Email</span>
-          <input type="email" className="border rounded-xl px-3 py-2 bg-white/80 dark:bg-slate-950/60" value={email} onChange={e=>setEmail(e.target.value)} required />
-        </label>
-        <label className="grid gap-1 text-sm">
-          <span>Message</span>
-          <textarea className="border rounded-xl px-3 py-2 min-h-[140px] bg-white/80 dark:bg-slate-950/60" value={msg} onChange={e=>setMsg(e.target.value)} required />
-        </label>
-        <button className="btn-primary disabled:opacity-50" disabled={!valid}>Send Email</button>
-      </form>
-
-      <div className="text-sm text-slate-600 dark:text-slate-300">
-        Or reach out directly: <a className="navlink" href={`mailto:${profile.email}`}>{profile.email}</a> • <a className="navlink" href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
-      </div>
+      <ul className="grid gap-4 md:grid-cols-2">
+        {contactLinks.map(({ label, value, href, icon: Icon }) => (
+          <li key={label} className="card p-6 flex flex-col gap-4">
+            <div className="space-y-1">
+              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</p>
+              <a
+                className="text-2xl font-semibold text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+                href={href}
+                target={label === 'Phone' || label === 'Email' ? undefined : '_blank'}
+                rel={label === 'Phone' || label === 'Email' ? undefined : 'noreferrer'}
+              >
+                {value}
+              </a>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-slate-500 dark:text-slate-400">Available weekdays 8a–6p (CST)</span>
+              <Icon className="text-slate-400 dark:text-slate-500" size={32} aria-hidden="true" />
+            </div>
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }

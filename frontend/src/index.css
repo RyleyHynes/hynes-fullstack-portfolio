@@ -5,14 +5,20 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: theme('fontFamily.display');
-  @apply bg-slate-50 text-slate-900;
+  @apply bg-slate-50 text-slate-900 transition-colors;
+  background-image: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.12), transparent 50%),
+    radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.16), transparent 55%);
+  background-attachment: fixed;
 }
 html.dark body {
-  @apply bg-slate-950 text-slate-100;
+  @apply bg-[#010414] text-slate-100;
+  background-image: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.08), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(56, 189, 248, 0.12), transparent 50%),
+    radial-gradient(circle at 50% 65%, rgba(14, 165, 233, 0.08), transparent 55%);
 }
 
 .container-padded { @apply mx-auto max-w-6xl px-4 sm:px-6 lg:px-8; }
-.card { @apply rounded-2xl shadow-soft bg-white/80 dark:bg-slate-900/80 backdrop-blur border border-slate-200/70 dark:border-slate-800/70 text-slate-900 dark:text-slate-100; }
+.card { @apply rounded-2xl shadow-soft bg-white/85 dark:bg-white/5 backdrop-blur border border-slate-200/70 dark:border-white/10 text-slate-900 dark:text-slate-100 transition-all; }
 .card-coming-soon { @apply relative overflow-hidden cursor-not-allowed; }
 .card-coming-soon > * { position: relative; z-index: 1; }
 .card-coming-soon::before {
@@ -43,8 +49,8 @@ html.dark body {
   pointer-events: none;
   z-index: 2;
 }
-.btn-primary { @apply inline-flex items-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 transition-shadow shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 dark:focus-visible:ring-brand-500/70; }
-.btn-ghost { @apply inline-flex items-center gap-2 rounded-xl border border-slate-200 text-slate-700 dark:text-slate-100 dark:border-slate-700/80 px-4 py-2 bg-white/80 dark:bg-slate-900/60 hover:border-brand-200 dark:hover:border-brand-400/60; }
+.btn-primary { @apply inline-flex items-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 transition shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 dark:focus-visible:ring-brand-500/70; }
+.btn-ghost { @apply inline-flex items-center gap-2 rounded-xl border border-slate-200/70 text-slate-700 dark:text-slate-100 dark:border-white/10 px-4 py-2 bg-white/80 dark:bg-white/5 hover:border-brand-200 dark:hover:border-brand-400/60; }
 .navlink { @apply text-sm font-medium text-slate-600 dark:text-slate-100 hover:text-brand-600 dark:hover:text-brand-300 transition-colors; }
 .section-title { @apply text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100; }
 .badge { @apply inline-flex items-center rounded-full border border-slate-200 dark:border-slate-800 px-2.5 py-1 text-xs text-slate-700 dark:text-slate-200; }
