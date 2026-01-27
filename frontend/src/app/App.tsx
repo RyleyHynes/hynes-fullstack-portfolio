@@ -11,18 +11,18 @@ import { Moon, Sun, Github, Linkedin, Mail, MapPin, Plane } from 'lucide-react'
 import AboutMe from '@/pages/AboutMe'
 import { profile } from '@/data/profile'
 import Home from '@/pages/Home'
-import Projects from '@/pages/Projects'
 import Career from '@/pages/Career'
 import SkillsExperience from '@/pages/SkillsExperience'
 import Contact from '@/pages/Contact'
 import CeliumProject from '@/pages/projects/CeliumProject'
-import CeliumLayout from '@/pages/celium/CeliumLayout'
-import Explore from '@/pages/celium/Explore'
-import ExploreRouteDetail from '@/pages/celium/ExploreRouteDetail'
-import Plan from '@/pages/celium/Plan'
-import PlanTripDetail from '@/pages/celium/PlanTripDetail'
-import Shop from '@/pages/celium/Shop'
-import ShopProductDetail from '@/pages/celium/ShopProductDetail'
+import CeliumLayout from '@/celium/CeliumLayout'
+import ApiDocs from '@/celium/ApiDocs'
+import Explore from '@/celium/Explore'
+import ExploreRouteDetail from '@/celium/ExploreRouteDetail'
+import Plan from '@/celium/Plan'
+import PlanTripDetail from '@/celium/PlanTripDetail'
+import Shop from '@/celium/Shop'
+import ShopProductDetail from '@/celium/ShopProductDetail'
 
 /**
  * Controls the Tailwind dark-mode class on the root document element.
@@ -68,7 +68,7 @@ const App = () => {
 
   const nav = useMemo(() => ([
     { to: '/', label: 'Home' },
-    { to: '/projects', label: 'Projects' },
+    { to: '/projects/celium', label: 'Celium' },
     { to: '/career', label: 'Career' },
     { to: '/about', label: 'About Me' },
     { to: '/skills-experience', label: 'Tech Stack & Skills' },
@@ -115,6 +115,7 @@ const App = () => {
               <Route path="plan/trips/:tripId" element={<PlanTripDetail />} />
               <Route path="shop" element={<Shop />} />
               <Route path="shop/products/:productId" element={<ShopProductDetail />} />
+              <Route path="api-docs" element={<ApiDocs />} />
             </Route>
           </Routes>
         ) : (
@@ -122,7 +123,7 @@ const App = () => {
             <div id="content" />
             <Routes location={location}>
               <Route path="/" element={<Home />} />
-              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects" element={<Navigate to="/projects/celium" replace />} />
               <Route path="/projects/celium" element={<CeliumProject />} />
               <Route path="/career" element={<Career />} />
               <Route path="/about" element={<AboutMe />} />

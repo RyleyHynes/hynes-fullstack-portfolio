@@ -112,7 +112,7 @@ export const projects = [
     name: 'Celium',
     isLive: true,
     blurb:
-      'A back country platform that connects routes, trip context, and gear into a single system for informed outdoor planning.',
+      'Built on connection.',
     features: [
       'Route discovery with filters, waypoints, and collaborative planning',
       'Integrated gear shop with inventory tracking and packing templates',
@@ -121,7 +121,7 @@ export const projects = [
     links: [
       { label: 'View Project', href: '/projects/celium' },
       { label: 'Launch App', href: '/apps/celium' },
-      { label: 'API Docs', href: '/api/celium/schema/swagger-ui/' },
+      { label: 'API Docs', href: '/apps/celium/api-docs' },
       { label: 'Repository', href: 'https://github.com/RyleyHynes/hynes-portfolio-static' }
     ],
     stack: STACK

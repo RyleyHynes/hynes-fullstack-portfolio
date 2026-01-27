@@ -5,8 +5,10 @@ import {
   getRoute,
   updateRoute,
   type ActivityType,
+  type ClimbingStyle,
   type Difficulty,
   type LoopType,
+  type RouteProgress,
   type RouteStatus,
   type RouteModel,
 } from '@/features/api/celiumRoutes'
@@ -16,6 +18,8 @@ type RouteFormState = {
   summary: string
   description: string
   activityType: ActivityType
+  climbingStyle: ClimbingStyle | ''
+  climbingGrade: string
   difficulty: Difficulty
   distanceMiles: string
   elevationGainFt: string
@@ -29,6 +33,7 @@ type RouteFormState = {
   endLatitude: string
   endLongitude: string
   status: RouteStatus
+  progress: RouteProgress
   publishedAt: string
 }
 
@@ -58,6 +63,8 @@ export default function ExploreRouteDetail() {
         summary: data.summary,
         description: data.description ?? '',
         activityType: data.activityType,
+        climbingStyle: data.climbingStyle ?? '',
+        climbingGrade: data.climbingGrade ?? '',
         difficulty: data.difficulty,
         distanceMiles: data.distanceMiles.toString(),
         elevationGainFt: data.elevationGainFt.toString(),
@@ -71,6 +78,7 @@ export default function ExploreRouteDetail() {
         endLatitude: data.endLatitude.toString(),
         endLongitude: data.endLongitude.toString(),
         status: data.status,
+        progress: data.progress,
         publishedAt: data.publishedAt ?? '',
       })
     } catch (err) {
@@ -98,6 +106,8 @@ export default function ExploreRouteDetail() {
         summary: draft.summary,
         description: draft.description || null,
         activityType: draft.activityType,
+        climbingStyle: draft.activityType === 'RockClimbing' ? (draft.climbingStyle || null) : null,
+        climbingGrade: draft.activityType === 'RockClimbing' ? (draft.climbingGrade || null) : null,
         difficulty: draft.difficulty,
         distanceMiles: Number(draft.distanceMiles),
         elevationGainFt: Number(draft.elevationGainFt),
@@ -111,6 +121,7 @@ export default function ExploreRouteDetail() {
         endLatitude: Number(draft.endLatitude),
         endLongitude: Number(draft.endLongitude),
         status: draft.status,
+        progress: draft.progress,
         publishedAt: draft.publishedAt ? new Date(draft.publishedAt).toISOString() : null,
       })
       setRoute(updated)

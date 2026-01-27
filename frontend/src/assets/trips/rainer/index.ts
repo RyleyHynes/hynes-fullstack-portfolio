@@ -1,11 +1,11 @@
-import R1 from './R1.jpeg'
-import R2 from './R2.jpeg'
-import R3 from './R3.jpeg'
-import R4 from './R4.jpeg'
-import R5 from './R5.jpeg'
-import R6 from './R6.jpeg'
-import R7 from './R7.jpeg'
-import R8 from './R8.jpeg'
-import R9 from './R9.jpeg'
+import DC1 from './DC1.jpeg'
+import DC2 from './DC2.jpeg'
+import DC3 from './DC3.jpeg'
+import DC4 from './DC4.jpeg'
+import DC5 from './DC5.jpeg'
+import DC6 from './DC6.jpeg'
+import DC7 from './DC7.jpeg'
+import DC8 from './DC8.jpeg'
+import DC9 from './DC9.jpeg'
 
-export const rainierPhotos = [R1, R2, R3, R4, R5, R6, R7, R8, R9] as const
+export const rainierPhotos = [DC1, DC2, DC3, DC4, DC5, DC6, DC7, DC8, DC9] as const

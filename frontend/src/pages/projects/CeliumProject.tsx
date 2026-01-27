@@ -1,9 +1,18 @@
 import { Link } from 'react-router-dom'
 
 const highlights = [
-  'Unified routing, planning, and commerce in a single product surface.',
-  'Route intelligence with filters, map overlays, and recommendation scaffolding.',
-  'Trip workspace that ties routes, notes, and gear into one draft.',
+  {
+    title: 'Explore — interactive route discovery and shared experience',
+    body: 'A discovery surface for hiking, running, and mountaineering routes, combining map-based exploration, filters, completion tracking, and community-contributed observations that build shared context over time.',
+  },
+  {
+    title: 'Plan — a workspace for preparation, not prescriptions',
+    body: 'A planning module that allows users to select routes, set dates, review weather signals, and organize preparation through curated checklists, maps, and supporting tools—without directing decisions.',
+  },
+  {
+    title: 'Support — sustaining the platform',
+    body: 'A lightweight support surface that demonstrates commerce workflows and provides a way for users to contribute to ongoing application development and future features.',
+  },
 ]
 
 const outcomes = [
@@ -19,7 +28,7 @@ export default function CeliumProject() {
         <p className="text-xs uppercase tracking-[0.25em] text-emerald-600">Project</p>
         <h1 className="section-title">Celium</h1>
         <p className="text-slate-600 dark:text-slate-300 max-w-3xl">
-          Celium is a backcountry network that brings route discovery, trip planning, and gear commerce into one cohesive experience.
+          Built on connection.
         </p>
         <div className="flex flex-wrap gap-3">
           <Link to="/apps/celium" className="btn-primary">Launch Celium</Link>
@@ -30,14 +39,17 @@ export default function CeliumProject() {
       <div className="grid lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-6">
         <div className="card p-6 grid gap-4">
           <h2 className="text-lg font-semibold">What it delivers</h2>
-          <ul className="grid gap-2 text-sm text-slate-600 dark:text-slate-300">
+          <div className="grid gap-4">
             {highlights.map(item => (
-              <li key={item} className="flex items-start gap-2">
-                <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" />
-                {item}
-              </li>
+              <div key={item.title} className="grid gap-2">
+                <div className="flex items-start gap-2">
+                  <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" />
+                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{item.title}</p>
+                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-300">{item.body}</p>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
         <aside className="card p-6">
@@ -54,12 +66,16 @@ export default function CeliumProject() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {['Explore', 'Plan', 'Shop'].map(panel => (
-          <div key={panel} className="card p-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-slate-400">{panel}</p>
+        {[
+          { title: 'Explore', copy: 'Find routes and see how others experienced them.' },
+          { title: 'Plan', copy: 'Turn routes into trip drafts.' },
+          { title: 'Support', copy: 'Help sustain ongoing development.' },
+        ].map(panel => (
+          <div key={panel.title} className="card p-5">
+            <p className="text-xs uppercase tracking-[0.25em] text-slate-400">{panel.title}</p>
             <div className="mt-4 h-36 rounded-2xl bg-gradient-to-br from-emerald-100 via-white to-sky-100 dark:from-emerald-900/40 dark:via-slate-900 dark:to-sky-900/30 border border-slate-200/60 dark:border-slate-800" />
             <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">
-              Snapshot of the {panel.toLowerCase()} experience inside the Celium app shell.
+              {panel.copy}
             </p>
           </div>
         ))}

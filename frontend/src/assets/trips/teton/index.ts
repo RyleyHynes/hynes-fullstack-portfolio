@@ -1,12 +1,12 @@
-import T1 from './T1.jpeg'
-import T2 from './T2.jpeg'
-import T3 from './T3.jpeg'
-import T4 from './T4.jpeg'
-import T5 from './T5.jpeg'
-import T6 from './T6.jpeg'
-import T7 from './T7.jpeg'
-import T8 from './T8.jpeg'
-import T9 from './T9.jpeg'
-import T10 from './T10.jpeg'
+import OS1 from './OS1.jpeg'
+import OS2 from './OS2.jpeg'
+import OS3 from './OS3.jpeg'
+import OS4 from './OS4.jpeg'
+import OS5 from './OS5.jpeg'
+import OS6 from './OS6.jpeg'
+import OS7 from './OS7.jpeg'
+import OS8 from './OS8.jpeg'
+import OS9 from './OS9.jpeg'
+import OS10 from './OS10.jpeg'
 
-export const tetonPhotos = [T1, T2, T3, T4, T5, T6, T7, T8, T9, T10] as const
+export const tetonPhotos = [OS1, OS2, OS3, OS4, OS5, OS6, OS7, OS8, OS9, OS10] as const

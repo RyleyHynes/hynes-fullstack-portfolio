@@ -41,6 +41,9 @@ export default function CeliumLayout() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            <Link to="/apps/celium/api-docs" className="text-xs text-slate-500 hover:text-emerald-600 transition-colors">
+              API Docs
+            </Link>
             <Link to="/projects/celium" className="text-xs text-slate-500 hover:text-emerald-600 transition-colors">
               ← Portfolio
             </Link>
