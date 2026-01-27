@@ -3,6 +3,7 @@ using Celium.Api.Contracts;
 using Celium.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using RouteModel = Celium.Api.Models.Route;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,14 +32,39 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
 app.UseCors("celium-frontend");
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/swagger"))
+    {
+        context.Response.Headers["Access-Control-Allow-Origin"] = "http://localhost:3000";
+        context.Response.Headers["Access-Control-Allow-Methods"] = "GET,OPTIONS";
+        context.Response.Headers["Access-Control-Allow-Headers"] = "*";
+    }
+
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = StatusCodes.Status200OK;
+        return;
+    }
+
+    await next();
+});
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger(options =>
+    {
+        options.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
+        {
+            httpReq.HttpContext.Response.Headers["Access-Control-Allow-Origin"] = "http://localhost:3000";
+        });
+    });
+    app.UseSwaggerUI(options =>
+    {
+        options.SupportedSubmitMethods(Array.Empty<SubmitMethod>());
+    });
+}
 
 var routes = app.MapGroup("/routes").WithOpenApi();
 
@@ -64,6 +90,8 @@ routes.MapPost("/", async (CreateRouteRequest request, CeliumDbContext db) =>
         Summary = request.Summary,
         Description = request.Description,
         ActivityType = request.ActivityType,
+        ClimbingStyle = request.ActivityType == ActivityType.RockClimbing ? request.ClimbingStyle : null,
+        ClimbingGrade = request.ActivityType == ActivityType.RockClimbing ? request.ClimbingGrade : null,
         Difficulty = request.Difficulty,
         DistanceMiles = request.DistanceMiles,
         ElevationGainFt = request.ElevationGainFt,
@@ -80,6 +108,7 @@ routes.MapPost("/", async (CreateRouteRequest request, CeliumDbContext db) =>
         LandscapeTypeId = defaultLandscapeTypeId,
         RegionId = defaultRegionId,
         Status = request.Status,
+        Progress = request.Progress,
         CreatedAt = now,
         UpdatedAt = now,
         PublishedAt = request.PublishedAt
@@ -102,6 +131,8 @@ routes.MapPut("/{id:guid}", async (Guid id, UpdateRouteRequest request, CeliumDb
     route.Summary = request.Summary;
     route.Description = request.Description;
     route.ActivityType = request.ActivityType;
+    route.ClimbingStyle = request.ActivityType == ActivityType.RockClimbing ? request.ClimbingStyle : null;
+    route.ClimbingGrade = request.ActivityType == ActivityType.RockClimbing ? request.ClimbingGrade : null;
     route.Difficulty = request.Difficulty;
     route.DistanceMiles = request.DistanceMiles;
     route.ElevationGainFt = request.ElevationGainFt;
@@ -118,6 +149,7 @@ routes.MapPut("/{id:guid}", async (Guid id, UpdateRouteRequest request, CeliumDb
     route.LandscapeTypeId = defaultLandscapeTypeId;
     route.RegionId = defaultRegionId;
     route.Status = request.Status;
+    route.Progress = request.Progress;
     route.PublishedAt = request.PublishedAt;
     route.UpdatedAt = DateTime.UtcNow;
 

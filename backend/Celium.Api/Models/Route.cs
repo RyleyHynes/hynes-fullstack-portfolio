@@ -3,7 +3,16 @@ namespace Celium.Api.Models;
 public enum ActivityType
 {
     Hiking,
-    TrailRunning
+    TrailRunning,
+    RockClimbing
+}
+
+public enum ClimbingStyle
+{
+    Sport,
+    Trad,
+    Bouldering,
+    Ice
 }
 
 public enum Difficulty
@@ -27,6 +36,12 @@ public enum RouteStatus
     Archived
 }
 
+public enum RouteProgress
+{
+    Todo,
+    Completed
+}
+
 public class Route
 {
     public Guid Id { get; set; }
@@ -34,6 +49,8 @@ public class Route
     public string Summary { get; set; } = string.Empty;
     public string? Description { get; set; }
     public ActivityType ActivityType { get; set; } = ActivityType.Hiking;
+    public ClimbingStyle? ClimbingStyle { get; set; }
+    public string? ClimbingGrade { get; set; }
     public Difficulty Difficulty { get; set; } = Difficulty.Moderate;
     public double DistanceMiles { get; set; }
     public int ElevationGainFt { get; set; }
@@ -50,6 +67,7 @@ public class Route
     public Guid LandscapeTypeId { get; set; }
     public Guid RegionId { get; set; }
     public RouteStatus Status { get; set; } = RouteStatus.Published;
+    public RouteProgress Progress { get; set; } = RouteProgress.Todo;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? PublishedAt { get; set; }

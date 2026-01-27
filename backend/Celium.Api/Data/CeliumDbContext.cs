@@ -22,9 +22,12 @@ public class CeliumDbContext : DbContext
             entity.Property(r => r.Description).HasMaxLength(4000);
             entity.Property(r => r.RouteGeometry).HasMaxLength(10000).IsRequired();
             entity.Property(r => r.ActivityType).HasConversion<string>().HasMaxLength(50);
+            entity.Property(r => r.ClimbingStyle).HasConversion<string>().HasMaxLength(50);
+            entity.Property(r => r.ClimbingGrade).HasMaxLength(20);
             entity.Property(r => r.Difficulty).HasConversion<string>().HasMaxLength(50);
             entity.Property(r => r.LoopType).HasConversion<string>().HasMaxLength(50);
             entity.Property(r => r.Status).HasConversion<string>().HasMaxLength(50);
+            entity.Property(r => r.Progress).HasConversion<string>().HasMaxLength(50);
         });
     }
 }
