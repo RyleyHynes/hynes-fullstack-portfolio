@@ -1,7 +1,9 @@
-export type ActivityType = 'Hiking' | 'TrailRunning'
+export type ActivityType = 'Hiking' | 'TrailRunning' | 'RockClimbing'
+export type ClimbingStyle = 'Sport' | 'Trad' | 'Bouldering' | 'Ice'
 export type Difficulty = 'Easy' | 'Moderate' | 'Hard' | 'Expert'
 export type LoopType = 'Loop' | 'OutAndBack' | 'PointToPoint'
 export type RouteStatus = 'Published' | 'Archived'
+export type RouteProgress = 'Todo' | 'Completed'
 
 export type RouteModel = {
   id: string
@@ -9,6 +11,8 @@ export type RouteModel = {
   summary: string
   description?: string | null
   activityType: ActivityType
+  climbingStyle?: ClimbingStyle | null
+  climbingGrade?: string | null
   difficulty: Difficulty
   distanceMiles: number
   elevationGainFt: number
@@ -25,12 +29,16 @@ export type RouteModel = {
   landscapeTypeId: string
   regionId: string
   status: RouteStatus
+  progress: RouteProgress
   createdAt?: string
   updatedAt?: string
   publishedAt?: string | null
 }
 
-export type CreateRoutePayload = Omit<RouteModel, 'id' | 'createdAt' | 'updatedAt'>
+export type CreateRoutePayload = Omit<
+  RouteModel,
+  'id' | 'createdAt' | 'updatedAt' | 'landscapeTypeId' | 'regionId' | 'routeGeometry'
+>
 export type UpdateRoutePayload = CreateRoutePayload
 
 const resolveBaseUrl = () => (

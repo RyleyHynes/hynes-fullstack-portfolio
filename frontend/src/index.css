@@ -54,3 +54,18 @@ html.dark body {
 .navlink { @apply text-sm font-medium text-slate-600 dark:text-slate-100 hover:text-brand-600 dark:hover:text-brand-300 transition-colors; }
 .section-title { @apply text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100; }
 .badge { @apply inline-flex items-center rounded-full border border-slate-200 dark:border-slate-800 px-2.5 py-1 text-xs text-slate-700 dark:text-slate-200; }
+
+.celium-marker { }
+.celium-marker__pin {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle at 30% 30%, #ecfdf5, #10b981);
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.45);
+}
+.celium-marker--user .celium-marker__pin {
+  background: radial-gradient(circle at 30% 30%, #fee2e2, #ef4444);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+}

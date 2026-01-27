@@ -1,9 +1,9 @@
-import LG1 from './LG1.jpeg'
-import LG2 from './LG2.jpeg'
-import LG3 from './LG3.jpeg'
-import LG4 from './LG4.jpeg'
-import LG5 from './LG5.jpeg'
-import LG6 from './LG6.jpeg'
-import LG7 from './LG7.jpeg'
+import Nose1 from './Nose1.jpeg'
+import Nose2 from './Nose2.jpeg'
+import Nose3 from './Nose3.jpeg'
+import Nose4 from './Nose4.jpeg'
+import Nose5 from './Nose5.jpeg'
+import Nose6 from './Nose6.jpeg'
+import Nose7 from './Nose7.jpeg'
 
-export const lookingGlassPhotos = [LG1, LG2, LG3, LG4, LG5, LG6, LG7] as const
+export const lookingGlassPhotos = [Nose1, Nose2, Nose3, Nose4, Nose5, Nose6, Nose7] as const
