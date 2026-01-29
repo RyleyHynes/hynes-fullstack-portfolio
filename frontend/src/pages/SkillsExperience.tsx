@@ -1,12 +1,13 @@
 import type { ComponentType } from 'react'
 import { skills } from '@/data/profile'
 import { Code, Server, ShieldCheck, Rocket } from 'lucide-react'
+import Badge from '@/components/data-display/Badge'
 
 /**
  * Small badge element used for tech stack tokens.
  */
 function Pill({ children }: { children: React.ReactNode }) {
-  return <span className="badge">{children}</span>
+  return <Badge>{children}</Badge>
 }
 
 /**

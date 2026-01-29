@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { Moon, Sun } from 'lucide-react'
+import IconButton from '@/components/buttons/IconButton'
 
 const navItems = [
   { label: 'Explore', to: '/apps/celium/explore' },
@@ -47,9 +48,11 @@ export default function CeliumLayout() {
             <Link to="/projects/celium" className="text-xs text-slate-500 hover:text-emerald-600 transition-colors">
               ← Portfolio
             </Link>
-            <button className="btn-ghost" onClick={toggleTheme} aria-label="Toggle dark mode">
-              {enabled ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
+            <IconButton
+              ariaLabel="Toggle dark mode"
+              icon={enabled ? <Sun size={16} /> : <Moon size={16} />}
+              onClick={toggleTheme}
+            />
           </div>
         </div>
       </header>

@@ -1,4 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import CardFooter from '@/components/layout/CardFooter'
+import CardHeader from '@/components/layout/CardHeader'
+import Pagination from '@/components/data-display/Pagination'
+import SectionHeader from '@/components/layout/SectionHeader'
 
 const products = [
   { id: 'alpine-pack', name: 'Alpine Guide Pack', price: '$249', detail: '40L expedition pack' },
@@ -7,15 +12,14 @@ const products = [
 ]
 
 export default function Shop() {
+  const [page, setPage] = useState(1)
   return (
     <section className="grid gap-6">
-      <header className="flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-[0.25em] text-emerald-600">Shop</p>
-        <h1 className="text-3xl font-semibold">Gear that matches your route and plan.</h1>
-        <p className="text-slate-600 dark:text-slate-300 max-w-2xl">
-          Curated packs and products based on conditions, route profile, and expedition goals.
-        </p>
-      </header>
+      <SectionHeader
+        eyebrow="Shop"
+        title="Gear that matches your route and plan."
+        subtitle="Curated packs and products based on conditions, route profile, and expedition goals."
+      />
 
       <div className="flex items-center gap-4 text-sm text-slate-500">
         <span className="font-semibold text-emerald-600">Browse</span>
@@ -27,12 +31,20 @@ export default function Shop() {
         {products.map(product => (
           <Link key={product.id} to={`/apps/celium/shop/products/${product.id}`} className="card p-5 hover:border-emerald-200">
             <div className="h-32 rounded-xl bg-gradient-to-br from-emerald-100 via-white to-sky-100 dark:from-emerald-900/40 dark:via-slate-900 dark:to-sky-900/30 border border-slate-200/60 dark:border-slate-800" />
-            <h3 className="mt-4 text-lg font-semibold">{product.name}</h3>
-            <p className="text-sm text-slate-500">{product.detail}</p>
-            <p className="mt-2 text-sm font-semibold text-emerald-600">{product.price}</p>
+            <CardHeader title={product.name} subtitle={product.detail} />
+            <CardFooter>
+              <span className="text-sm font-semibold text-emerald-600">{product.price}</span>
+            </CardFooter>
           </Link>
         ))}
       </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={1}
+        onChange={setPage}
+        label="Browse"
+      />
     </section>
   )
 }

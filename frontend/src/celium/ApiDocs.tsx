@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import Card from '@/components/Card'
-import Button from '@/components/Button'
+import Card from '@/components/cards/Card'
+import Button from '@/components/buttons/Button'
+import SectionHeader from '@/components/layout/SectionHeader'
+import Table from '@/components/data-display/Table'
 
 type ApiSpec = {
   info?: {
@@ -127,24 +129,20 @@ export default function ApiDocs() {
 
   return (
     <section className="grid gap-6">
-      <header className="grid gap-2">
-        <p className="text-xs uppercase tracking-[0.3em] text-emerald-600">API Docs</p>
-        <h1 className="text-3xl font-semibold">{spec?.info?.title ?? 'Celium API'}</h1>
-        <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
-          {spec?.info?.description ?? 'Reference for every endpoint, payload, and response shape in Celium.'}
-        </p>
-        <div className="text-xs text-slate-500">
-          Base URL: <span className="font-mono">{baseUrl}</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="text" onClick={() => setShowSwagger(false)}>
-            Reference view
-          </Button>
-          <Button variant="text" onClick={() => setShowSwagger(true)}>
-            Swagger UI (read-only)
-          </Button>
-        </div>
-      </header>
+      <SectionHeader
+        eyebrow="API Docs"
+        title={spec?.info?.title ?? 'Celium API'}
+        subtitle={spec?.info?.description ?? 'Reference for every endpoint, payload, and response shape in Celium.'}
+        meta={<span>Base URL: <span className="font-mono">{baseUrl}</span></span>}
+      />
+      <div className="flex flex-wrap items-center gap-2">
+        <Button variant="text" onClick={() => setShowSwagger(false)}>
+          Reference view
+        </Button>
+        <Button variant="text" onClick={() => setShowSwagger(true)}>
+          Swagger UI (read-only)
+        </Button>
+      </div>
 
       {isLoading ? (
         <Card className="p-4 text-sm text-slate-500">Loading API schema...</Card>
@@ -183,24 +181,27 @@ export default function ApiDocs() {
                 {op.parameters?.length ? (
                   <div className="mt-4 text-sm">
                     <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Parameters</p>
-                    <div className="mt-2 overflow-hidden rounded-xl border border-slate-200/70 dark:border-slate-800">
-                      <div className="grid grid-cols-[1.2fr_0.8fr_0.6fr] gap-2 bg-slate-100/70 dark:bg-slate-900/60 px-3 py-2 text-[11px] uppercase tracking-wider text-slate-500">
-                        <span>Field</span>
-                        <span>Type</span>
-                        <span>Required</span>
-                      </div>
-                      <div className="divide-y divide-slate-200/70 dark:divide-slate-800">
-                        {op.parameters.map(param => (
-                          <div key={`${param.in}-${param.name}`} className="grid grid-cols-[1.2fr_0.8fr_0.6fr] gap-2 px-3 py-2 text-sm">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-mono">{param.name}</span>
-                              <span className="text-[11px] uppercase tracking-wide text-slate-400">{param.in}</span>
-                            </div>
-                            <span className="text-xs text-slate-500">{formatSchema(param.schema, spec ?? undefined)}</span>
-                            <span className="text-xs text-slate-500">{param.required ? 'required' : 'optional'}</span>
-                          </div>
-                        ))}
-                      </div>
+                    <div className="mt-2">
+                      <Table
+                        columns={[
+                          { key: 'field', label: 'Field' },
+                          { key: 'type', label: 'Type' },
+                          { key: 'required', label: 'Required' },
+                        ]}
+                        rows={op.parameters.map(param => ({
+                          id: `${param.in}-${param.name}`,
+                          cells: {
+                            field: (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-mono">{param.name}</span>
+                                <span className="text-[11px] uppercase tracking-wide text-slate-400">{param.in}</span>
+                              </div>
+                            ),
+                            type: <span className="text-xs text-slate-500">{formatSchema(param.schema, spec ?? undefined)}</span>,
+                            required: <span className="text-xs text-slate-500">{param.required ? 'required' : 'optional'}</span>,
+                          },
+                        }))}
+                      />
                     </div>
                   </div>
                 ) : null}
@@ -209,21 +210,22 @@ export default function ApiDocs() {
                   <div className="mt-4 text-sm">
                     <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Request Body</p>
                     {buildSchemaRows(op.requestBody.content['application/json'].schema, spec ?? undefined).length ? (
-                      <div className="mt-2 overflow-hidden rounded-xl border border-slate-200/70 dark:border-slate-800">
-                        <div className="grid grid-cols-[1.2fr_0.8fr_0.6fr] gap-2 bg-slate-100/70 dark:bg-slate-900/60 px-3 py-2 text-[11px] uppercase tracking-wider text-slate-500">
-                          <span>Field</span>
-                          <span>Type</span>
-                          <span>Required</span>
-                        </div>
-                        <div className="divide-y divide-slate-200/70 dark:divide-slate-800">
-                          {buildSchemaRows(op.requestBody.content['application/json'].schema, spec ?? undefined).map(row => (
-                            <div key={row.key} className="grid grid-cols-[1.2fr_0.8fr_0.6fr] gap-2 px-3 py-2 text-sm">
-                              <span className="font-mono">{row.key}</span>
-                              <span className="text-xs text-slate-500">{row.type}</span>
-                              <span className="text-xs text-slate-500">{row.required ? 'required' : 'optional'}</span>
-                            </div>
-                          ))}
-                        </div>
+                      <div className="mt-2">
+                        <Table
+                          columns={[
+                            { key: 'field', label: 'Field' },
+                            { key: 'type', label: 'Type' },
+                            { key: 'required', label: 'Required' },
+                          ]}
+                          rows={buildSchemaRows(op.requestBody.content['application/json'].schema, spec ?? undefined).map(row => ({
+                            id: row.key,
+                            cells: {
+                              field: <span className="font-mono">{row.key}</span>,
+                              type: <span className="text-xs text-slate-500">{row.type}</span>,
+                              required: <span className="text-xs text-slate-500">{row.required ? 'required' : 'optional'}</span>,
+                            },
+                          }))}
+                        />
                       </div>
                     ) : (
                       <pre className="mt-2 whitespace-pre-wrap rounded-xl bg-slate-950/90 text-slate-100 p-3 text-xs">

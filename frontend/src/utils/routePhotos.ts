@@ -1,7 +1,7 @@
-import { rainierPhotos } from '@/assets/trips/rainer'
+import { rainierPhotos } from '@/assets/trips/rainier'
 import { tetonPhotos } from '@/assets/trips/teton'
 import { whitneyPhotos } from '@/assets/trips/whitney'
-import { lookingGlassPhotos } from '@/assets/trips/lookingGlass'
+import { lookingGlassPhotos } from '@/assets/trips/looking-glass'
 
 const normalizeName = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
 

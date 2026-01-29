@@ -14,7 +14,9 @@ import Home from '@/pages/Home'
 import Career from '@/pages/Career'
 import SkillsExperience from '@/pages/SkillsExperience'
 import Contact from '@/pages/Contact'
+import IconButton from '@/components/buttons/IconButton'
 import CeliumProject from '@/pages/projects/CeliumProject'
+import ComponentGallery from '@/pages/ComponentGallery'
 import CeliumLayout from '@/celium/CeliumLayout'
 import ApiDocs from '@/celium/ApiDocs'
 import Explore from '@/celium/Explore'
@@ -94,11 +96,25 @@ const App = () => {
               ))}
             </nav>
             <div className="flex items-center gap-2">
-              <a className="btn-ghost" href={profile.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={18} /></a>
-              <a className="btn-ghost" href={profile.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={18} /></a>
-              <button className="btn-ghost" onClick={() => setEnabled(!enabled)} aria-label="Toggle dark mode">
-                {enabled ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
+              <IconButton
+                href={profile.github}
+                target="_blank"
+                rel="noreferrer"
+                ariaLabel="GitHub"
+                icon={<Github size={18} />}
+              />
+              <IconButton
+                href={profile.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                ariaLabel="LinkedIn"
+                icon={<Linkedin size={18} />}
+              />
+              <IconButton
+                ariaLabel="Toggle dark mode"
+                icon={enabled ? <Sun size={18} /> : <Moon size={18} />}
+                onClick={() => setEnabled(!enabled)}
+              />
             </div>
           </div>
         </header>
@@ -125,6 +141,7 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/projects" element={<Navigate to="/projects/celium" replace />} />
               <Route path="/projects/celium" element={<CeliumProject />} />
+              <Route path="/ui" element={<ComponentGallery />} />
               <Route path="/career" element={<Career />} />
               <Route path="/about" element={<AboutMe />} />
               <Route path="/skills-experience" element={<SkillsExperience />} />

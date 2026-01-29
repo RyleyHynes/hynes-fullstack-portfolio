@@ -1,5 +1,5 @@
-export { lookingGlassPhotos } from './lookingGlass'
+export { lookingGlassPhotos } from './looking-glass'
 export { tetonPhotos } from './teton'
-export { rainierPhotos } from './rainer'
+export { rainierPhotos } from './rainier'
 export { whitneyPhotos } from './whitney'
-export { mojonRojoPhotos } from './mojonRojo'
+export { mojonRojoPhotos } from './mojon-rojo'

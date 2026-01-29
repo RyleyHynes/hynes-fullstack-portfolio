@@ -12,6 +12,12 @@ import {
   type RouteStatus,
   type RouteModel,
 } from '@/features/api/celiumRoutes'
+import ActionBar from '@/components/layout/ActionBar'
+import Button from '@/components/buttons/Button'
+import EmptyState from '@/components/data-display/EmptyState'
+import InlineFormRow from '@/components/form/InlineFormRow'
+import SectionHeader from '@/components/layout/SectionHeader'
+import StatGrid from '@/components/layout/StatGrid'
 
 type RouteFormState = {
   name: string
@@ -148,22 +154,20 @@ export default function ExploreRouteDetail() {
       </Link>
 
       {isLoading ? (
-        <div className="card p-4 text-sm text-slate-500">Loading route...</div>
+        <EmptyState title="Loading route..." />
       ) : null}
       {error ? (
-        <div className="card p-4 text-sm text-rose-600">{error}</div>
+        <EmptyState title="Unable to load route." description={error} />
       ) : null}
       {!isLoading && !route ? (
-        <div className="card p-4 text-sm text-slate-500">Route not found.</div>
+        <EmptyState title="Route not found." description="Check the route ID and try again." />
       ) : null}
 
-      <header className="grid gap-2">
-        <h1 className="text-3xl font-semibold">{route?.name ?? 'Route detail'}</h1>
-        <p className="text-slate-600 dark:text-slate-300 max-w-2xl">
-          {route?.summary ?? 'No summary available yet.'}
-        </p>
-        <p className="text-xs text-slate-400">Route ID: {routeId}</p>
-      </header>
+      <SectionHeader
+        title={route?.name ?? 'Route detail'}
+        subtitle={route?.summary ?? 'No summary available yet.'}
+        meta={<span>Route ID: {routeId}</span>}
+      />
 
       <div className="grid md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-6">
         <div className="card p-6 grid gap-6">
@@ -173,21 +177,14 @@ export default function ExploreRouteDetail() {
               {route?.description || 'Add a detailed description to guide the next team on conditions and hazards.'}
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {stats.map(stat => (
-              <div key={stat.label} className="rounded-xl border border-slate-200/70 dark:border-slate-800 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">{stat.label}</p>
-                <p className="mt-1 font-semibold">{stat.value}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button className="btn-primary">Add to Plan</button>
-            <button className="btn-ghost">Suggest Edit</button>
-            <button className="btn-ghost text-rose-600 hover:text-rose-500" onClick={handleDelete}>
+          <StatGrid stats={stats} />
+          <ActionBar>
+            <Button variant="primary">Add to Plan</Button>
+            <Button>Suggest Edit</Button>
+            <Button variant="text" className="text-rose-600 hover:text-rose-500" onClick={handleDelete}>
               Delete route
-            </button>
-          </div>
+            </Button>
+          </ActionBar>
         </div>
 
         <aside className="card p-6">
@@ -216,48 +213,49 @@ export default function ExploreRouteDetail() {
             <span className="text-xs text-slate-400">PUT /routes/{routeId}</span>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <label className="text-xs text-slate-500">Name</label>
+            <InlineFormRow label="Name">
               <input
                 className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
                 value={draft.name}
                 onChange={(event) => handleChange('name', event.target.value)}
                 required
               />
-            </div>
-            <div className="grid gap-2">
-              <label className="text-xs text-slate-500">Summary</label>
+            </InlineFormRow>
+            <InlineFormRow label="Summary">
               <input
                 className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
                 value={draft.summary}
                 onChange={(event) => handleChange('summary', event.target.value)}
                 required
               />
-            </div>
+            </InlineFormRow>
           </div>
           <div className="grid gap-2">
-            <label className="text-xs text-slate-500">Description</label>
-            <textarea
-              className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
-              rows={3}
-              value={draft.description}
-              onChange={(event) => handleChange('description', event.target.value)}
-            />
+            <InlineFormRow label="Description">
+              <textarea
+                className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
+                rows={3}
+                value={draft.description}
+                onChange={(event) => handleChange('description', event.target.value)}
+              />
+            </InlineFormRow>
           </div>
           <div className="grid md:grid-cols-4 gap-4">
             <div className="grid gap-2">
-              <label className="text-xs text-slate-500">Activity type</label>
-              <select
-                className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
-                value={draft.activityType}
-                onChange={(event) => handleChange('activityType', event.target.value)}
-              >
-                <option value="Hiking">Hiking</option>
-                <option value="TrailRunning">Trail running</option>
-              </select>
+              <InlineFormRow label="Activity type">
+                <select
+                  className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
+                  value={draft.activityType}
+                  onChange={(event) => handleChange('activityType', event.target.value)}
+                >
+                  <option value="Hiking">Hiking</option>
+                  <option value="TrailRunning">Trail running</option>
+                  <option value="RockClimbing">Rock climbing</option>
+                </select>
+              </InlineFormRow>
             </div>
             <div className="grid gap-2">
-              <label className="text-xs text-slate-500">Difficulty</label>
+              <InlineFormRow label="Difficulty">
               <select
                 className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
                 value={draft.difficulty}
@@ -268,6 +266,7 @@ export default function ExploreRouteDetail() {
                 <option value="Hard">Hard</option>
                 <option value="Expert">Expert</option>
               </select>
+              </InlineFormRow>
             </div>
             <div className="grid gap-2">
               <label className="text-xs text-slate-500">Loop type</label>
