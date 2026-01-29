@@ -2,9 +2,13 @@
   "name": "portfolio-root",
   "private": true,
   "scripts": {
-    "dev": "concurrently -k -n BACKEND,FRONTEND \"cd server && . .venv/bin/activate && python manage.py runserver\" \"cd frontend && npm run dev\""
+    "dev": "concurrently -k -n BACKEND,FRONTEND \"cd server && . .venv/bin/activate && python manage.py runserver\" \"cd frontend && npm run dev\"",
+    "prepare": "husky install",
+    "lint:frontend": "cd frontend && npm run lint",
+    "test:frontend": "cd frontend && npm run test"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0"
+    "concurrently": "^9.0.0",
+    "husky": "^9.1.7"
   }
 }
