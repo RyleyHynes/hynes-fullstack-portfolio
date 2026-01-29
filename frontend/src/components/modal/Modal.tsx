@@ -7,10 +7,12 @@ import type {
   RouteProgress,
   RouteStatus,
 } from '@/features/api/celiumRoutes'
-import Button from '@/components/Button'
-import Input from '@/components/Input'
-import PhotoCarousel from '@/components/PhotoCarousel'
-import Select from '@/components/Select'
+import Button from '@/components/buttons/Button'
+import Input from '@/components/form/Input'
+import PhotoCarousel from '@/components/media/PhotoCarousel'
+import Select from '@/components/form/Select'
+import ModalFooter from '@/components/modal/ModalFooter'
+import ModalHeader from '@/components/modal/ModalHeader'
 
 type ModalConfig = {
   title?: string
@@ -142,12 +144,14 @@ export default function Modal({ isOpen, title, onClose, children, footer, config
       <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
         <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
         <div className="relative w-full max-w-3xl max-h-[80vh] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 shadow-xl flex flex-col">
-          <div className="flex items-center justify-between border-b border-slate-200/70 dark:border-slate-800 px-6 py-4">
-            <h3 className="text-lg font-semibold">{isEdit ? 'Edit route' : 'Create route'}</h3>
-            <button className="text-sm text-slate-500 hover:text-emerald-600" onClick={onClose}>
-              Close
-            </button>
-          </div>
+          <ModalHeader
+            title={isEdit ? 'Edit route' : 'Create route'}
+            action={(
+              <button className="text-sm text-slate-500 hover:text-emerald-600" onClick={onClose}>
+                Close
+              </button>
+            )}
+          />
           <div className="px-6 py-5 overflow-y-auto">
             <div className="grid gap-4">
               <div className="flex items-center justify-between">
@@ -334,7 +338,7 @@ export default function Modal({ isOpen, title, onClose, children, footer, config
               </div>
             </div>
           </div>
-          <div className="border-t border-slate-200/70 dark:border-slate-800 px-6 py-4 flex justify-end gap-3">
+          <ModalFooter>
             {isEdit ? (
               <>
                 <Button onClick={onClose}>Cancel</Button>
@@ -346,7 +350,7 @@ export default function Modal({ isOpen, title, onClose, children, footer, config
                 <Button variant="primary" onClick={config.onSubmit}>Create route</Button>
               </>
             )}
-          </div>
+          </ModalFooter>
         </div>
       </div>
     )
@@ -356,17 +360,17 @@ export default function Modal({ isOpen, title, onClose, children, footer, config
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
       <div className={`relative w-full ${sizeClassName} max-h-[80vh] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 shadow-xl flex flex-col ${panelClassName}`.trim()}>
-        <div className="flex items-center justify-between border-b border-slate-200/70 dark:border-slate-800 px-6 py-4">
-          <h3 className="text-lg font-semibold">{resolvedTitle}</h3>
-          <button className="text-sm text-slate-500 hover:text-emerald-600" onClick={onClose}>
-            {closeLabel}
-          </button>
-        </div>
+        <ModalHeader
+          title={resolvedTitle}
+          action={(
+            <button className="text-sm text-slate-500 hover:text-emerald-600" onClick={onClose}>
+              {closeLabel}
+            </button>
+          )}
+        />
         <div className={`px-6 py-5 overflow-y-auto ${bodyClassName}`.trim()}>{resolvedBody}</div>
         {resolvedFooter ? (
-          <div className="border-t border-slate-200/70 dark:border-slate-800 px-6 py-4 flex justify-end gap-3">
-            {resolvedFooter}
-          </div>
+          <ModalFooter>{resolvedFooter}</ModalFooter>
         ) : null}
       </div>
     </div>

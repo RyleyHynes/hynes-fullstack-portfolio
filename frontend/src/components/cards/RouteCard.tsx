@@ -1,7 +1,8 @@
 import { forwardRef } from 'react'
 import { Link } from 'react-router-dom'
 import type { RouteModel } from '@/features/api/celiumRoutes'
-import Button from '@/components/Button'
+import Badge from '@/components/data-display/Badge'
+import Button from '@/components/buttons/Button'
 
 type RouteCardProps = {
   route: RouteModel
@@ -56,7 +57,7 @@ const RouteCard = forwardRef<HTMLDivElement, RouteCardProps>(
             </span>
           </div>
         </div>
-        <span className="badge">{route.difficulty}</span>
+        <Badge>{route.difficulty}</Badge>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
         <span>{route.distanceMiles} mi</span>

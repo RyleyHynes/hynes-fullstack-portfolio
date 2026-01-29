@@ -2,6 +2,8 @@ import { motion } from 'framer-motion'
 import { projects } from '@/data/profile'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight} from 'lucide-react'
+import Avatar from '@/components/user/Avatar'
+import Badge from '@/components/data-display/Badge'
 
 /**
  * Landing page hero plus teaser cards for select projects.
@@ -10,6 +12,7 @@ export default function Home() {
   return (
     <section className="grid gap-10">
       <div className="card p-10 text-slate-900 dark:text-slate-100">
+        <Avatar initials="RH" label="Ryley Hynes" />
         <p className="text-sm uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-300">Full-stack engineer</p>
         <h1 className="section-title mt-3">Crafting dependable software for healthcare & beyond.</h1>
         <p className="mt-4 text-lg text-slate-600 dark:text-slate-300 max-w-3xl">
@@ -49,9 +52,7 @@ export default function Home() {
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-200">{p.blurb}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {p.stack.map((s) => (
-                <span key={s} className="badge">
-                  {s}
-                </span>
+                <Badge key={s}>{s}</Badge>
               ))}
             </div>
             {isLive && primaryLink ? (

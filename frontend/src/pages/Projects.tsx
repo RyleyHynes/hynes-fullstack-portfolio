@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { projects } from '@/data/profile'
+import Badge from '@/components/data-display/Badge'
 
 /**
  * Project gallery showcasing full-stack sample apps.
@@ -56,7 +57,7 @@ export default function Projects() {
             </div>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-200">{p.blurb}</p>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {p.stack.map(s => <li key={s} className="badge">{s}</li>)}
+              {p.stack.map(s => <Badge key={s}>{s}</Badge>)}
             </ul>
           </article>
           )

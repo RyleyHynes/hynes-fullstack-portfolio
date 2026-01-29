@@ -11,14 +11,18 @@ import {
   type RouteProgress,
   type RouteStatus,
 } from '@/features/api/celiumRoutes'
-import Button from '@/components/Button'
-import Card from '@/components/Card'
-import Modal, { defaultRouteForm } from '@/components/Modal'
-import PhotoCarousel from '@/components/PhotoCarousel'
-import RouteCard from '@/components/RouteCard'
-import RouteMap from '@/components/RouteMap'
-import SearchBar from '@/components/SearchBar'
-import Tabs from '@/components/Tabs'
+import Button from '@/components/buttons/Button'
+import Card from '@/components/cards/Card'
+import EmptyState from '@/components/data-display/EmptyState'
+import FilterChips from '@/components/data-display/FilterChips'
+import Modal, { defaultRouteForm } from '@/components/modal/Modal'
+import PhotoCarousel from '@/components/media/PhotoCarousel'
+import PageToolbar from '@/components/layout/PageToolbar'
+import RouteCard from '@/components/cards/RouteCard'
+import RouteMap from '@/components/media/RouteMap'
+import SearchBar from '@/components/form/SearchBar'
+import SectionHeader from '@/components/layout/SectionHeader'
+import Tabs from '@/components/data-display/Tabs'
 import { getRoutePhotos } from '@/utils/routePhotos'
 
 const filters = ['Distance', 'Elevation', 'Difficulty', 'Landscape', 'Region']
@@ -330,35 +334,28 @@ export default function Explore() {
 
   return (
     <section className="grid gap-6">
-      <header className="flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-[0.25em] text-emerald-600">Explore</p>
-        <h1 className="text-3xl font-semibold">Find the right route for the window you have.</h1>
-        <p className="text-slate-600 dark:text-slate-300 max-w-2xl">
-          Search across curated backcountry routes with route geometry, conditions, and trip-ready context.
-        </p>
-      </header>
+      <SectionHeader
+        eyebrow="Explore"
+        title="Find the right route for the window you have."
+        subtitle="Search across curated backcountry routes with route geometry, conditions, and trip-ready context."
+      />
 
-      <Card className="p-5">
-        <div className="flex flex-col lg:flex-row gap-4">
+      <PageToolbar
+        search={(
           <SearchBar
-            className="w-full lg:flex-1"
             placeholder="Search by route, description, or activity"
             value={searchQuery}
             onChange={setSearchQuery}
             label="Search routes"
           />
-          <div className="flex flex-wrap gap-2">
-            {filters.map(filter => (
-              <Button key={filter} variant="text" className="badge hover:border-emerald-300 hover:text-emerald-700 transition-colors">
-                {filter}
-              </Button>
-            ))}
-          </div>
-          <Button className="self-start" variant="primary" type="button" onClick={handleCreateClick}>
+        )}
+        filters={<FilterChips items={filters} />}
+        actions={(
+          <Button variant="primary" type="button" onClick={handleCreateClick}>
             Create route
           </Button>
-        </div>
-      </Card>
+        )}
+      />
 
       <Tabs
         active={activeTab}
@@ -379,7 +376,11 @@ export default function Explore() {
             <Card className="p-4 text-sm text-rose-600">{error}</Card>
           ) : null}
           {!isLoading && visibleRoutes.length === 0 ? (
-            <Card className="p-4 text-sm text-slate-500">No routes yet. Create one to get started.</Card>
+            <EmptyState
+              title="No routes yet."
+              description="Create one to get started."
+              action={<Button variant="text" onClick={handleCreateClick}>Create route</Button>}
+            />
           ) : null}
           {visibleRoutes.map(route => {
             const coverImage = getRoutePhotos(route.name)[0]
