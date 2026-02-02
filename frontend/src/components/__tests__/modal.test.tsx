@@ -17,9 +17,13 @@ const RouteFormHarness = ({ onClose }: { onClose: () => void }) => {
         onSubmit: onClose,
         onReset: () => setForm({ ...defaultRouteForm }),
         photos: [],
-        onPhotosChange: (_files) => undefined,
+        onPhotosChange: (files) => {
+          void files
+        },
         photoIndex: 0,
-        setPhotoIndex: (_value) => undefined,
+        setPhotoIndex: (value) => {
+          void value
+        },
         showValidation: true,
       }}
     />
