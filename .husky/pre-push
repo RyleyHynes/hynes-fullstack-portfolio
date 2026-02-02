@@ -1,0 +1,3 @@
+echo "Running frontend lint and tests..."
+npm run lint:frontend
+npm run test:frontend

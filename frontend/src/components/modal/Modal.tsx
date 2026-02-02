@@ -13,6 +13,7 @@ import PhotoCarousel from '@/components/media/PhotoCarousel'
 import Select from '@/components/form/Select'
 import ModalFooter from '@/components/modal/ModalFooter'
 import ModalHeader from '@/components/modal/ModalHeader'
+import { type RouteFormState } from '@/components/modal/routeForm'
 
 type ModalConfig = {
   title?: string
@@ -22,54 +23,6 @@ type ModalConfig = {
   closeLabel?: string
   panelClassName?: string
   bodyClassName?: string
-}
-
-export type RouteFormState = {
-  name: string
-  summary: string
-  description: string
-  activityType: ActivityType | ''
-  climbingStyle: ClimbingStyle | ''
-  climbingGrade: string
-  difficulty: Difficulty | ''
-  distanceMiles: string
-  elevationGainFt: string
-  elevationLossFt: string
-  maxElevationFt: string
-  minElevationFt: string
-  estimatedTimeMinutes: string
-  loopType: LoopType | ''
-  startLatitude: string
-  startLongitude: string
-  endLatitude: string
-  endLongitude: string
-  status: RouteStatus | ''
-  progress: RouteProgress
-  publishedAt: string
-}
-
-export const defaultRouteForm: RouteFormState = {
-  name: '',
-  summary: '',
-  description: '',
-  activityType: '',
-  climbingStyle: '',
-  climbingGrade: '',
-  difficulty: '',
-  distanceMiles: '',
-  elevationGainFt: '',
-  elevationLossFt: '',
-  maxElevationFt: '',
-  minElevationFt: '',
-  estimatedTimeMinutes: '',
-  loopType: '',
-  startLatitude: '',
-  startLongitude: '',
-  endLatitude: '',
-  endLongitude: '',
-  status: '',
-  progress: 'Todo',
-  publishedAt: '',
 }
 
 type RouteFormConfig = {

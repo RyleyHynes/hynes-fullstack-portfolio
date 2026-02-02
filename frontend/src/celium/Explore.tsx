@@ -15,7 +15,7 @@ import Button from '@/components/buttons/Button'
 import Card from '@/components/cards/Card'
 import EmptyState from '@/components/data-display/EmptyState'
 import FilterChips from '@/components/data-display/FilterChips'
-import Modal, { defaultRouteForm } from '@/components/modal/Modal'
+import { Modal, defaultRouteForm } from '@/components/modal'
 import PhotoCarousel from '@/components/media/PhotoCarousel'
 import PageToolbar from '@/components/layout/PageToolbar'
 import RouteCard from '@/components/cards/RouteCard'
@@ -434,7 +434,7 @@ export default function Explore() {
           onSubmit: editingRoute ? handleUpdate : handleCreate,
           onReset: editingRoute ? undefined : () => setForm({ ...defaultRouteForm }),
           photos: editingRoute ? (routePhotos[editingRoute.id] ?? []) : createPhotos,
-          onPhotosChange: (files) => {
+          onPhotosChange: (files: File[]) => {
             if (editingRoute) {
               setRoutePhotos(current => ({ ...current, [editingRoute.id]: files }))
             } else {

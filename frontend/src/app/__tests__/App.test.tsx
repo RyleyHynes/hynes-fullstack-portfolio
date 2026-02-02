@@ -11,7 +11,7 @@ describe('App shell', () => {
     )
 
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Projects' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Celium' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Career' })).toBeInTheDocument()
   })
 

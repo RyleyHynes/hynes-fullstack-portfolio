@@ -1,5 +1,4 @@
 import type { ComponentType } from 'react'
-import { skills } from '@/data/profile'
 import { Code, Server, ShieldCheck, Rocket } from 'lucide-react'
 import Badge from '@/components/data-display/Badge'
 

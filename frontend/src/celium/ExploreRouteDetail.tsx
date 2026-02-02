@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   deleteRoute,
@@ -57,7 +57,7 @@ export default function ExploreRouteDetail() {
     { label: 'Loop', value: route?.loopType ?? '--' },
   ]), [route])
 
-  const loadRoute = async () => {
+  const loadRoute = useCallback(async () => {
     if (!routeId) return
     setIsLoading(true)
     setError(null)
@@ -92,11 +92,11 @@ export default function ExploreRouteDetail() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [routeId])
 
   useEffect(() => {
     loadRoute()
-  }, [routeId])
+  }, [loadRoute])
 
   const handleChange = (field: keyof RouteFormState, value: string) => {
     setDraft(current => (current ? { ...current, [field]: value } : current))
