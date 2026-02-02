@@ -65,9 +65,10 @@ describe('Modal', () => {
     const onClose = vi.fn()
     render(<RouteFormHarness onClose={onClose} />)
 
-    expect(screen.getByText('Create route')).toBeInTheDocument()
-    expect(screen.getByLabelText('Name *')).toBeInTheDocument()
-    fireEvent.change(screen.getByLabelText('Activity type *'), { target: { value: 'RockClimbing' } })
+    expect(screen.getByRole('heading', { name: 'Create route' })).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Skyline Ridge Traverse')).toBeInTheDocument()
+    const selects = screen.getAllByRole('combobox')
+    fireEvent.change(selects[0], { target: { value: 'RockClimbing' } })
     expect(screen.getByLabelText('Climbing style')).toBeInTheDocument()
   })
 })

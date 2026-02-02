@@ -22,6 +22,7 @@ import SectionHeader from '@/components/layout/SectionHeader'
 import StatGrid from '@/components/layout/StatGrid'
 import Avatar from '@/components/user/Avatar'
 import UserChip from '@/components/user/UserChip'
+import type { RouteModel } from '@/features/api/celiumRoutes'
 
 const sampleRoute = {
   id: 'route-1',
@@ -48,7 +49,7 @@ const sampleRoute = {
   regionId: 'region',
   status: 'Published',
   progress: 'Todo',
-}
+} satisfies RouteModel
 
 describe('Reusable components', () => {
   it('renders layout blocks and interactions', () => {
@@ -66,11 +67,10 @@ describe('Reusable components', () => {
             meta={<span>Meta</span>}
           />
           <PageToolbar
-            title="Routes"
+            search={<SearchBar label="Search routes" value="" onChange={() => {}} />}
             actions={<Button>Primary</Button>}
-            description="Toolbar copy"
           />
-          <ActionBar title="Actions" description="Action hint">
+          <ActionBar>
             <Button variant="text">Secondary</Button>
           </ActionBar>
           <Card>
@@ -78,7 +78,7 @@ describe('Reusable components', () => {
             <div className="p-3">
               <Badge>Active</Badge>
               <EmptyState title="No data" description="Add a route." />
-              <FilterChips items={['Distance', 'Region']} onClick={onFilter} renderSuffix={(item) => <span>{item}</span>} />
+              <FilterChips items={['Distance', 'Region']} onClick={onFilter} />
               <Pagination currentPage={2} totalPages={3} onChange={onPage} label="Pages" />
               <Tabs
                 active="all"
@@ -99,7 +99,8 @@ describe('Reusable components', () => {
     expect(screen.getByText('Active')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Todo (2)'))
     expect(onTabChange).toHaveBeenCalledWith('todo')
-    fireEvent.click(screen.getByText('Distance'))
+    const distanceButtons = screen.getAllByRole('button', { name: 'Distance' })
+    fireEvent.click(distanceButtons[0])
     expect(onFilter).toHaveBeenCalledWith('Distance')
     fireEvent.click(screen.getByText('Next'))
     expect(onPage).toHaveBeenCalledWith(3)
@@ -109,7 +110,7 @@ describe('Reusable components', () => {
     const onChange = vi.fn()
     render(
       <div>
-        <InlineFormRow label="Field" hint="Hint">
+        <InlineFormRow label="Field" helper="Hint">
           <Input label="Name" value="" onChange={onChange} placeholder="Name" />
         </InlineFormRow>
         <SearchBar label="Search" value="Route" onChange={onChange} />
@@ -139,7 +140,7 @@ describe('Reusable components', () => {
     const onDelete = vi.fn()
     const onSelect = vi.fn()
 
-    render(
+    const { container } = render(
       <MemoryRouter>
         <RouteCard
           route={sampleRoute}
@@ -153,13 +154,17 @@ describe('Reusable components', () => {
       </MemoryRouter>
     )
 
-    fireEvent.click(screen.getByText('View'))
+    fireEvent.click(screen.getByRole('button', { name: 'View' }))
     expect(onView).toHaveBeenCalledWith(sampleRoute)
-    fireEvent.click(screen.getByText('Edit'))
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
     expect(onEdit).toHaveBeenCalledWith(sampleRoute)
-    fireEvent.click(screen.getByText('Delete'))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
     expect(onDelete).toHaveBeenCalledWith(sampleRoute)
-    fireEvent.keyDown(screen.getByRole('button'), { key: 'Enter' })
+    const selectable = container.querySelector('[role="button"]')
+    if (!selectable) {
+      throw new Error('Route card select element missing')
+    }
+    fireEvent.keyDown(selectable, { key: 'Enter' })
     expect(onSelect).toHaveBeenCalledWith(sampleRoute)
   })
 
@@ -169,8 +174,8 @@ describe('Reusable components', () => {
         <Button variant="primary">Save</Button>
         <IconButton ariaLabel="Settings" icon={<span>Icon</span>} />
         <IconButton ariaLabel="Docs" icon={<span>Icon</span>} href="https://example.com" />
-        <Avatar name="Celium User" />
-        <UserChip name="Ryley" subtitle="Explorer" />
+        <Avatar initials="CU" label="Celium User" />
+        <UserChip name="Ryley" role="Explorer" />
         <StatGrid
           stats={[
             { label: 'Routes', value: '12' },

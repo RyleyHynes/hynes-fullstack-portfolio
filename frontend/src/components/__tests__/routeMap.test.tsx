@@ -26,6 +26,10 @@ vi.mock('react-leaflet', () => ({
 }))
 
 vi.mock('leaflet', () => ({
+  default: {
+    divIcon: () => ({}),
+    latLngBounds: () => ({}),
+  },
   divIcon: () => ({}),
   latLngBounds: () => ({}),
 }))

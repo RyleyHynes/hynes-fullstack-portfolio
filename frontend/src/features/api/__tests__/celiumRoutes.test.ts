@@ -4,6 +4,8 @@ import {
   updateRoute,
   deleteRoute,
   getRoute,
+  type CreateRoutePayload,
+  type RouteModel,
 } from '@/features/api/celiumRoutes'
 
 const mockRoute = {
@@ -31,7 +33,7 @@ const mockRoute = {
   regionId: 'region',
   status: 'Published',
   progress: 'Todo',
-}
+} satisfies RouteModel
 
 describe('celiumRoutes api', () => {
   beforeEach(() => {
@@ -71,7 +73,7 @@ describe('celiumRoutes api', () => {
       json: async () => mockRoute,
     } as Response)
 
-    await createRoute({
+    const payload: CreateRoutePayload = {
       name: mockRoute.name,
       summary: mockRoute.summary,
       description: mockRoute.description ?? null,
@@ -93,7 +95,9 @@ describe('celiumRoutes api', () => {
       status: mockRoute.status,
       progress: mockRoute.progress,
       publishedAt: null,
-    })
+    }
+
+    await createRoute(payload)
 
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/routes'), expect.objectContaining({ method: 'POST' }))
   })
@@ -105,7 +109,7 @@ describe('celiumRoutes api', () => {
       json: async () => mockRoute,
     } as Response)
 
-    await updateRoute('route-1', {
+    const payload: CreateRoutePayload = {
       name: mockRoute.name,
       summary: mockRoute.summary,
       description: mockRoute.description ?? null,
@@ -127,7 +131,9 @@ describe('celiumRoutes api', () => {
       status: mockRoute.status,
       progress: mockRoute.progress,
       publishedAt: null,
-    })
+    }
+
+    await updateRoute('route-1', payload)
 
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/routes/route-1'), expect.objectContaining({ method: 'PUT' }))
   })

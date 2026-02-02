@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import Explore from '@/celium/Explore'
 
 const mockRoutes = [
@@ -55,7 +56,11 @@ describe('Explore', () => {
   })
 
   it('renders routes from the API', async () => {
-    render(<Explore />)
+    render(
+      <MemoryRouter>
+        <Explore />
+      </MemoryRouter>
+    )
 
     expect(await screen.findByText('Disappointment Cleaver')).toBeInTheDocument()
     expect(screen.getByTestId('route-map')).toBeInTheDocument()
@@ -63,7 +68,11 @@ describe('Explore', () => {
 
   it('creates a new route from the modal', async () => {
     const { createRoute } = await import('@/features/api/celiumRoutes')
-    render(<Explore />)
+    render(
+      <MemoryRouter>
+        <Explore />
+      </MemoryRouter>
+    )
 
     fireEvent.click(screen.getByText('Create route'))
     fireEvent.change(screen.getByLabelText('Name *'), { target: { value: 'Skyline Ridge' } })
