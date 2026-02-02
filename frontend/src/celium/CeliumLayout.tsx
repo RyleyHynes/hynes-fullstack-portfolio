@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { Moon, Sun } from 'lucide-react'
+import { Moon, Sun, LogIn, LogOut } from 'lucide-react'
 import IconButton from '@/components/buttons/IconButton'
+import Button from '@/components/buttons/Button'
+import { useAuth } from '@/auth'
 
 const navItems = [
   { label: 'Explore', to: '/apps/celium/explore' },
@@ -11,6 +13,7 @@ const navItems = [
 
 export default function CeliumLayout() {
   const [enabled, setEnabled] = useState(document.documentElement.classList.contains('dark'))
+  const { isAuthenticated, user, login, logout } = useAuth()
 
   const toggleTheme = () => {
     const root = document.documentElement
@@ -42,12 +45,24 @@ export default function CeliumLayout() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            {isAuthenticated && user?.name ? (
+              <span className="text-xs text-slate-500">Hi, {user.name}</span>
+            ) : null}
             <Link to="/apps/celium/api-docs" className="text-xs text-slate-500 hover:text-emerald-600 transition-colors">
               API Docs
             </Link>
             <Link to="/projects/celium" className="text-xs text-slate-500 hover:text-emerald-600 transition-colors">
               ← Portfolio
             </Link>
+            {isAuthenticated ? (
+              <Button variant="text" className="text-xs" onClick={logout}>
+                <LogOut size={14} className="mr-1" /> Sign out
+              </Button>
+            ) : (
+              <Button variant="text" className="text-xs" onClick={() => login()}>
+                <LogIn size={14} className="mr-1" /> Sign in
+              </Button>
+            )}
             <IconButton
               ariaLabel="Toggle dark mode"
               icon={enabled ? <Sun size={16} /> : <Moon size={16} />}

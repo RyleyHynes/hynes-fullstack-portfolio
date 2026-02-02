@@ -56,28 +56,42 @@ const handleResponse = async <T>(response: Response) => {
   return response.json() as Promise<T>
 }
 
+const buildHeaders = (accessToken?: string, withJson = false) => {
+  const headers: Record<string, string> = {}
+  if (withJson) {
+    headers['Content-Type'] = 'application/json'
+  }
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`
+  }
+  return headers
+}
+
 export const listRoutes = async () =>
   handleResponse<RouteModel[]>(await fetch(`${baseUrl}/routes`))
 
 export const getRoute = async (id: string) =>
   handleResponse<RouteModel>(await fetch(`${baseUrl}/routes/${id}`))
 
-export const createRoute = async (payload: CreateRoutePayload) =>
+export const createRoute = async (payload: CreateRoutePayload, accessToken?: string) =>
   handleResponse<RouteModel>(await fetch(`${baseUrl}/routes`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: buildHeaders(accessToken, true),
     body: JSON.stringify(payload),
   }))
 
-export const updateRoute = async (id: string, payload: UpdateRoutePayload) =>
+export const updateRoute = async (id: string, payload: UpdateRoutePayload, accessToken?: string) =>
   handleResponse<RouteModel>(await fetch(`${baseUrl}/routes/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: buildHeaders(accessToken, true),
     body: JSON.stringify(payload),
   }))
 
-export const deleteRoute = async (id: string) => {
-  const response = await fetch(`${baseUrl}/routes/${id}`, { method: 'DELETE' })
+export const deleteRoute = async (id: string, accessToken?: string) => {
+  const response = await fetch(`${baseUrl}/routes/${id}`, {
+    method: 'DELETE',
+    headers: buildHeaders(accessToken),
+  })
   if (!response.ok) {
     const message = await response.text()
     throw new Error(message || `Request failed (${response.status})`)

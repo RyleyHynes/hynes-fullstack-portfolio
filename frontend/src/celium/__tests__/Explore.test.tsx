@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import Explore from '@/celium/Explore'
+import { AuthProvider } from '@/auth'
 
 const mockRoutes = [
   {
@@ -38,6 +39,23 @@ vi.mock('@/features/api/celiumRoutes', () => ({
   updateRoute: vi.fn(),
 }))
 
+vi.mock('@/auth', async () => {
+  const actual = await vi.importActual<typeof import('@/auth')>('@/auth')
+  return {
+    ...actual,
+    useAuth: () => ({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { name: 'Test User' },
+      login: async () => undefined,
+      logout: () => undefined,
+      getAccessToken: async () => 'test-token',
+      hasRole: () => false,
+      hasPermission: () => false,
+    }),
+  }
+})
+
 vi.mock('@/components/media/RouteMap', () => ({
   default: () => <div data-testid="route-map" />,
 }))
@@ -57,9 +75,11 @@ describe('Explore', () => {
 
   it('renders routes from the API', async () => {
     render(
-      <MemoryRouter>
-        <Explore />
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <Explore />
+        </MemoryRouter>
+      </AuthProvider>
     )
 
     expect(await screen.findByText('Disappointment Cleaver')).toBeInTheDocument()
@@ -69,9 +89,11 @@ describe('Explore', () => {
   it('creates a new route from the modal', async () => {
     const { createRoute } = await import('@/features/api/celiumRoutes')
     render(
-      <MemoryRouter>
-        <Explore />
-      </MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter>
+          <Explore />
+        </MemoryRouter>
+      </AuthProvider>
     )
 
     fireEvent.click(screen.getByText('Create route'))

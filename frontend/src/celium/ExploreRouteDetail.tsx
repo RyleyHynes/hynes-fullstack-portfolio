@@ -18,6 +18,7 @@ import EmptyState from '@/components/data-display/EmptyState'
 import InlineFormRow from '@/components/form/InlineFormRow'
 import SectionHeader from '@/components/layout/SectionHeader'
 import StatGrid from '@/components/layout/StatGrid'
+import { useAuth } from '@/auth'
 
 type RouteFormState = {
   name: string
@@ -49,6 +50,7 @@ export default function ExploreRouteDetail() {
   const [draft, setDraft] = useState<RouteFormState | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { isAuthenticated, login, getAccessToken } = useAuth()
 
   const stats = useMemo(() => ([
     { label: 'Distance', value: route ? `${route.distanceMiles} mi` : '--' },
@@ -107,6 +109,11 @@ export default function ExploreRouteDetail() {
     if (!routeId || !draft) return
     setError(null)
     try {
+      if (!isAuthenticated) {
+        await login({ returnTo: `/apps/celium/explore/routes/${routeId}` })
+        return
+      }
+      const accessToken = await getAccessToken()
       const updated = await updateRoute(routeId, {
         name: draft.name,
         summary: draft.summary,
@@ -129,7 +136,7 @@ export default function ExploreRouteDetail() {
         status: draft.status,
         progress: draft.progress,
         publishedAt: draft.publishedAt ? new Date(draft.publishedAt).toISOString() : null,
-      })
+      }, accessToken ?? undefined)
       setRoute(updated)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to update route.')
@@ -140,7 +147,12 @@ export default function ExploreRouteDetail() {
     if (!routeId) return
     setError(null)
     try {
-      await deleteRoute(routeId)
+      if (!isAuthenticated) {
+        await login({ returnTo: `/apps/celium/explore/routes/${routeId}` })
+        return
+      }
+      const accessToken = await getAccessToken()
+      await deleteRoute(routeId, accessToken ?? undefined)
       setRoute(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to delete route.')
