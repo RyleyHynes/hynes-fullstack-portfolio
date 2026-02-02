@@ -107,7 +107,7 @@ app.MapGet("/me", (ClaimsPrincipal user) =>
     {
         IsAuthenticated = user.Identity?.IsAuthenticated ?? false,
         Name = user.Identity?.Name,
-        Roles = user.FindAll(user.Identity?.RoleClaimType ?? ClaimTypes.Role).Select(role => role.Value).ToArray(),
+        Roles = user.FindAll(ClaimTypes.Role).Select(role => role.Value).ToArray(),
         Permissions = user.FindAll("permissions").Select(permission => permission.Value).ToArray(),
         Claims = claims
     });
