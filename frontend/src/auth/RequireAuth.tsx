@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect } from 'react'
+import Button from '@/components/buttons/Button'
 import { authEnabled } from './authConfig'
 import { useAuth } from './AuthContext'
 
@@ -16,7 +17,16 @@ export default function RequireAuth({ children }: RequireAuthProps) {
 
   if (!authEnabled) return <>{children}</>
   if (isLoading) return <div className="p-6 text-sm text-slate-500">Checking session...</div>
-  if (!isAuthenticated) return <div className="p-6 text-sm text-slate-500">Redirecting to login...</div>
+  if (!isAuthenticated) {
+    return (
+      <div className="p-6 text-sm text-slate-500 grid gap-3">
+        <span>Redirecting to login...</span>
+        <Button variant="primary" onClick={() => void login({ returnTo: window.location.pathname })}>
+          Sign in
+        </Button>
+      </div>
+    )
+  }
 
   return <>{children}</>
 }
