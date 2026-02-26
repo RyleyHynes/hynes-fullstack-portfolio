@@ -113,7 +113,9 @@ app.MapGet("/me", (ClaimsPrincipal user) =>
     });
 }).RequireAuthorization();
 
-var routes = app.MapGroup("/routes").WithOpenApi();
+var routes = app.MapGroup("/routes")
+    .WithOpenApi()
+    .RequireAuthorization();
 
 routes.MapGet("/", async (CeliumDbContext db) =>
 {

@@ -67,11 +67,15 @@ const buildHeaders = (accessToken?: string, withJson = false) => {
   return headers
 }
 
-export const listRoutes = async () =>
-  handleResponse<RouteModel[]>(await fetch(`${baseUrl}/routes`))
+export const listRoutes = async (accessToken?: string) =>
+  handleResponse<RouteModel[]>(await fetch(`${baseUrl}/routes`, {
+    headers: buildHeaders(accessToken),
+  }))
 
-export const getRoute = async (id: string) =>
-  handleResponse<RouteModel>(await fetch(`${baseUrl}/routes/${id}`))
+export const getRoute = async (id: string, accessToken?: string) =>
+  handleResponse<RouteModel>(await fetch(`${baseUrl}/routes/${id}`, {
+    headers: buildHeaders(accessToken),
+  }))
 
 export const createRoute = async (payload: CreateRoutePayload, accessToken?: string) =>
   handleResponse<RouteModel>(await fetch(`${baseUrl}/routes`, {

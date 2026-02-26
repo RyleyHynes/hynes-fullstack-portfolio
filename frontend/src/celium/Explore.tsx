@@ -118,7 +118,8 @@ export default function Explore() {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await listRoutes()
+      const accessToken = await getAccessToken()
+      const data = await listRoutes(accessToken ?? undefined)
       setRoutes(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to load routes.')

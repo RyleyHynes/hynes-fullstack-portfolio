@@ -11,7 +11,7 @@ export type AuthContextValue = {
   isAuthenticated: boolean
   isLoading: boolean
   user?: AuthUser
-  login: (options?: { returnTo?: string }) => Promise<void>
+  login: (options?: { returnTo?: string, mode?: 'signin' | 'signup' }) => Promise<void>
   logout: () => void
   getAccessToken: () => Promise<string | null>
   hasRole: (role: string) => boolean

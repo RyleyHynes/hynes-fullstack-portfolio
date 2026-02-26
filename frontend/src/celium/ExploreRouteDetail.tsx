@@ -64,7 +64,8 @@ export default function ExploreRouteDetail() {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await getRoute(routeId)
+      const accessToken = await getAccessToken()
+      const data = await getRoute(routeId, accessToken ?? undefined)
       setRoute(data)
       setDraft({
         name: data.name,
@@ -94,7 +95,7 @@ export default function ExploreRouteDetail() {
     } finally {
       setIsLoading(false)
     }
-  }, [routeId])
+  }, [getAccessToken, routeId])
 
   useEffect(() => {
     loadRoute()

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { Moon, Sun, LogIn, LogOut } from 'lucide-react'
-import IconButton from '@/components/buttons/IconButton'
 import Button from '@/components/buttons/Button'
+import IconButton from '@/components/buttons/IconButton'
 import { useAuth } from '@/auth'
 
 const navItems = [
@@ -55,12 +55,24 @@ export default function CeliumLayout() {
               ← Portfolio
             </Link>
             {isAuthenticated ? (
-              <Button variant="text" className="text-xs" onClick={logout}>
-                <LogOut size={14} className="mr-1" /> Sign out
+              <Button
+                className="inline-flex items-center gap-1 rounded-full border border-slate-300/80 dark:border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+                type="button"
+                variant="ghost"
+                onClick={logout}
+              >
+                <LogOut size={14} />
+                Sign out
               </Button>
             ) : (
-              <Button variant="text" className="text-xs" onClick={() => login()}>
-                <LogIn size={14} className="mr-1" /> Sign in
+              <Button
+                className="inline-flex items-center gap-1 rounded-full border border-slate-300/80 dark:border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+                type="button"
+                variant="ghost"
+                onClick={() => void login({ returnTo: '/apps/celium/explore', mode: 'signin' })}
+              >
+                <LogIn size={14} />
+                Sign in
               </Button>
             )}
             <IconButton

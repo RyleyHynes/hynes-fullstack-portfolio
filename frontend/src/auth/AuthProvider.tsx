@@ -7,6 +7,23 @@ type AuthProviderProps = {
   children: ReactNode
 }
 
+const basePath = (() => {
+  const raw = import.meta.env.BASE_URL ?? '/'
+  return raw.endsWith('/') ? raw.slice(0, -1) : raw
+})()
+
+const stripBasePath = (path: string) => {
+  if (!path.startsWith('/')) return `/${path}`
+  if (basePath && path.startsWith(`${basePath}/`)) return path.slice(basePath.length)
+  if (basePath && path === basePath) return '/'
+  return path
+}
+
+const normalizeReturnTo = (returnTo?: string) => {
+  const candidate = stripBasePath(returnTo ?? '/apps/celium/explore')
+  return candidate.startsWith('/apps/celium') ? candidate : '/apps/celium/explore'
+}
+
 const FallbackProvider = ({ children }: AuthProviderProps) => (
   <AuthContext.Provider value={{
     isAuthenticated: false,
@@ -38,8 +55,12 @@ const AuthBridge = ({ children }: AuthProviderProps) => {
       isLoading,
       user,
       login: async (options) => {
+        const currentPath = stripBasePath(window.location.pathname)
         await loginWithRedirect({
-          appState: { returnTo: options?.returnTo ?? window.location.pathname },
+          appState: { returnTo: normalizeReturnTo(options?.returnTo ?? currentPath) },
+          authorizationParams: options?.mode === 'signup'
+            ? { screen_hint: 'signup' }
+            : undefined,
         })
       },
       logout: () => {
@@ -71,10 +92,16 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     return <FallbackProvider>{children}</FallbackProvider>
   }
 
+  const onRedirectCallback = (appState?: { returnTo?: string }) => {
+    const targetPath = normalizeReturnTo(appState?.returnTo)
+    window.location.replace(`${window.location.origin}${basePath}${targetPath}`)
+  }
+
   return (
     <Auth0Provider
       domain={authConfig.domain}
       clientId={authConfig.clientId}
+      onRedirectCallback={onRedirectCallback}
       authorizationParams={{
         redirect_uri: `${window.location.origin}${import.meta.env.BASE_URL}`,
         audience: authConfig.audience || undefined,
