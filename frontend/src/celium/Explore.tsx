@@ -24,6 +24,7 @@ import SearchBar from '@/components/form/SearchBar'
 import SectionHeader from '@/components/layout/SectionHeader'
 import Tabs from '@/components/data-display/Tabs'
 import { getRoutePhotos } from '@/utils/routePhotos'
+import { useAuth } from '@/auth'
 
 const filters = ['Distance', 'Elevation', 'Difficulty', 'Landscape', 'Region']
 
@@ -44,6 +45,7 @@ export default function Explore() {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null)
   const routeRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const { isAuthenticated, login, getAccessToken } = useAuth()
 
   const parseCoordinate = (raw: string, kind: 'lat' | 'lng') => {
     const value = raw.trim().toUpperCase()
@@ -116,7 +118,8 @@ export default function Explore() {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await listRoutes()
+      const accessToken = await getAccessToken()
+      const data = await listRoutes(accessToken ?? undefined)
       setRoutes(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to load routes.')
@@ -181,6 +184,11 @@ export default function Explore() {
     }
     setError(null)
     try {
+      if (!isAuthenticated) {
+        await login({ returnTo: '/apps/celium/explore' })
+        return
+      }
+      const accessToken = await getAccessToken()
       await createRoute({
         name: form.name,
         summary: form.summary,
@@ -203,7 +211,7 @@ export default function Explore() {
         status: form.status as RouteStatus,
         progress: form.progress as RouteProgress,
         publishedAt: form.publishedAt ? new Date(form.publishedAt).toISOString() : null,
-      })
+      }, accessToken ?? undefined)
       setForm({ ...defaultRouteForm })
       setCreatePhotos([])
       setIsCreateOpen(false)
@@ -217,7 +225,12 @@ export default function Explore() {
   const handleDelete = async (id: string) => {
     setError(null)
     try {
-      await deleteRoute(id)
+      if (!isAuthenticated) {
+        await login({ returnTo: '/apps/celium/explore' })
+        return
+      }
+      const accessToken = await getAccessToken()
+      await deleteRoute(id, accessToken ?? undefined)
       await loadRoutes()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to delete route.')
@@ -273,6 +286,11 @@ export default function Explore() {
     if (!editingRoute) return
     setError(null)
     try {
+      if (!isAuthenticated) {
+        await login({ returnTo: '/apps/celium/explore' })
+        return
+      }
+      const accessToken = await getAccessToken()
       const startLat = parseCoordinate(editForm.startLatitude, 'lat')
       const startLng = parseCoordinate(editForm.startLongitude, 'lng')
       const endLat = parseCoordinate(editForm.endLatitude, 'lat')
@@ -313,7 +331,7 @@ export default function Explore() {
         status: editForm.status as RouteStatus,
         progress: editForm.progress as RouteProgress,
         publishedAt: editForm.publishedAt ? new Date(editForm.publishedAt).toISOString() : null,
-      })
+      }, accessToken ?? undefined)
       setEditingRoute(null)
       await loadRoutes()
     } catch (err) {

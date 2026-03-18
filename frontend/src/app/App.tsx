@@ -18,6 +18,7 @@ import IconButton from '@/components/buttons/IconButton'
 import CeliumProject from '@/pages/projects/CeliumProject'
 import ComponentGallery from '@/pages/ComponentGallery'
 import CeliumLayout from '@/celium/CeliumLayout'
+import { RequireAuth } from '@/auth'
 import ApiDocs from '@/celium/ApiDocs'
 import Explore from '@/celium/Explore'
 import ExploreRouteDetail from '@/celium/ExploreRouteDetail'
@@ -123,7 +124,14 @@ const App = () => {
       <AnimatePresence mode="wait">
         {isCeliumApp ? (
           <Routes location={location} key={location.pathname}>
-            <Route path="/apps/celium" element={<CeliumLayout />}>
+            <Route
+              path="/apps/celium"
+              element={(
+                <RequireAuth>
+                  <CeliumLayout />
+                </RequireAuth>
+              )}
+            >
               <Route index element={<Navigate to="/apps/celium/explore" replace />} />
               <Route path="explore" element={<Explore />} />
               <Route path="explore/routes/:routeId" element={<ExploreRouteDetail />} />

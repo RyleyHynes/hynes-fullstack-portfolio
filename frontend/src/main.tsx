@@ -8,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom'
  * Internal Imports
  */
 import App from './app/App'
+import { AuthProvider } from './auth'
 /** 
  * Style Imports
  */
@@ -23,8 +24,10 @@ import './styles/global.scss'
  */
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <App />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <App />
+      </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>
 )

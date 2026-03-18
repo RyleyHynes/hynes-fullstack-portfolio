@@ -54,7 +54,6 @@ const sampleRoute = {
 describe('Reusable components', () => {
   it('renders layout blocks and interactions', () => {
     const onTabChange = vi.fn()
-    const onFilter = vi.fn()
     const onPage = vi.fn()
 
     render(
@@ -78,7 +77,7 @@ describe('Reusable components', () => {
             <div className="p-3">
               <Badge>Active</Badge>
               <EmptyState title="No data" description="Add a route." />
-              <FilterChips items={['Distance', 'Region']} onClick={onFilter} />
+              <FilterChips items={['Distance', 'Region']} />
               <Pagination currentPage={2} totalPages={3} onChange={onPage} label="Pages" />
               <Tabs
                 active="all"
@@ -99,9 +98,6 @@ describe('Reusable components', () => {
     expect(screen.getByText('Active')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Todo (2)'))
     expect(onTabChange).toHaveBeenCalledWith('todo')
-    const distanceButtons = screen.getAllByRole('button', { name: 'Distance' })
-    fireEvent.click(distanceButtons[0])
-    expect(onFilter).toHaveBeenCalledWith('Distance')
     fireEvent.click(screen.getByText('Next'))
     expect(onPage).toHaveBeenCalledWith(3)
   })
@@ -212,5 +208,13 @@ describe('Reusable components', () => {
     render(<Pagination currentPage={1} totalPages={1} onChange={vi.fn()} />)
     expect(screen.getByText('Prev')).toBeDisabled()
     expect(screen.getByText('Next')).toBeDisabled()
+  })
+
+  it('fires filter chip callbacks', () => {
+    const onFilter = vi.fn()
+    render(<FilterChips items={['Distance', 'Region']} onClick={onFilter} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Distance' }))
+    expect(onFilter).toHaveBeenCalledWith('Distance')
   })
 })

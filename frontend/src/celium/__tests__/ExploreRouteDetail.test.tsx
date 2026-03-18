@@ -2,6 +2,23 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import ExploreRouteDetail from '@/celium/ExploreRouteDetail'
 
+vi.mock('@/auth', async () => {
+  const actual = await vi.importActual<typeof import('@/auth')>('@/auth')
+  return {
+    ...actual,
+    useAuth: () => ({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { name: 'Test User' },
+      login: async () => undefined,
+      logout: () => undefined,
+      getAccessToken: async () => 'test-token',
+      hasRole: () => false,
+      hasPermission: () => false,
+    }),
+  }
+})
+
 const mockRoute = {
   id: 'route-1',
   name: 'Alpine Loop',

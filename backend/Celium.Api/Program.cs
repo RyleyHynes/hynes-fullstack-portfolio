@@ -1,7 +1,11 @@
 using Celium.Api.Data;
 using Celium.Api.Contracts;
 using Celium.Api.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text.Json.Serialization;
 using RouteModel = Celium.Api.Models.Route;
 
@@ -12,7 +16,32 @@ var defaultRegionId = Guid.Parse("00000000-0000-0000-0000-000000000010");
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 builder.Services.AddDbContext<CeliumDbContext>(Options => Options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -28,6 +57,32 @@ builder.Services.AddCors(options =>
     });
 });
 
+var auth0Domain = builder.Configuration["Auth0:Domain"];
+var auth0Audience = builder.Configuration["Auth0:Audience"];
+var authRoleClaim = builder.Configuration["Auth0:RoleClaim"] ?? "https://celium.app/roles";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = $"https://{auth0Domain}/";
+        options.Audience = auth0Audience;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            NameClaimType = "name",
+            RoleClaimType = authRoleClaim
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("routes:write", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context =>
+            context.User.HasClaim("permissions", "routes:write") || context.User.IsInRole("Admin"));
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -39,8 +94,28 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("celium-frontend");
+app.UseAuthentication();
+app.UseAuthorization();
 
-var routes = app.MapGroup("/routes").WithOpenApi();
+app.MapGet("/me", (ClaimsPrincipal user) =>
+{
+    var claims = user.Claims
+        .GroupBy(claim => claim.Type)
+        .ToDictionary(group => group.Key, group => group.Select(claim => claim.Value).ToArray());
+
+    return Results.Ok(new
+    {
+        IsAuthenticated = user.Identity?.IsAuthenticated ?? false,
+        Name = user.Identity?.Name,
+        Roles = user.FindAll(ClaimTypes.Role).Select(role => role.Value).ToArray(),
+        Permissions = user.FindAll("permissions").Select(permission => permission.Value).ToArray(),
+        Claims = claims
+    });
+}).RequireAuthorization();
+
+var routes = app.MapGroup("/routes")
+    .WithOpenApi()
+    .RequireAuthorization();
 
 routes.MapGet("/", async (CeliumDbContext db) =>
 {
@@ -88,7 +163,7 @@ routes.MapPost("/", async (CreateRouteRequest request, CeliumDbContext db) =>
     db.Routes.Add(route);
     await db.SaveChangesAsync();
     return Results.Created($"/routes/{route.Id}", route);
-});
+}).RequireAuthorization("routes:write");
 
 routes.MapPut("/{id:guid}", async (Guid id, UpdateRouteRequest request, CeliumDbContext db) =>
 {
@@ -123,7 +198,7 @@ routes.MapPut("/{id:guid}", async (Guid id, UpdateRouteRequest request, CeliumDb
 
     await db.SaveChangesAsync();
     return Results.Ok(route);
-});
+}).RequireAuthorization("routes:write");
 
 routes.MapDelete("/{id:guid}", async (Guid id, CeliumDbContext db) =>
 {
@@ -136,6 +211,6 @@ routes.MapDelete("/{id:guid}", async (Guid id, CeliumDbContext db) =>
     db.Routes.Remove(route);
     await db.SaveChangesAsync();
     return Results.NoContent();
-});
+}).RequireAuthorization("routes:write");
 
 app.Run();
