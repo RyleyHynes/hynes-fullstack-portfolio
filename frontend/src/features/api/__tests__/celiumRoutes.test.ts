@@ -146,6 +146,12 @@ describe('celiumRoutes api', () => {
     } as Response)
 
     await deleteRoute('route-1')
-    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/routes/route-1'), { method: 'DELETE' })
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/routes/route-1'),
+      expect.objectContaining({
+        headers: {},
+        method: 'DELETE',
+      })
+    )
   })
 })

@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import RequireAuth from '@/auth/RequireAuth'
 import RequireRole from '@/auth/RequireRole'
 import { AuthContext, type AuthContextValue } from '@/auth/AuthContext'
@@ -15,16 +16,18 @@ const mockAuth: AuthContextValue = {
 }
 
 describe('RequireAuth and RequireRole', () => {
-  it('renders children when authenticated', () => {
+  it('renders children when authenticated', async () => {
     render(
-      <AuthContext.Provider value={mockAuth}>
-        <RequireAuth>
-          <div>Protected</div>
-        </RequireAuth>
-      </AuthContext.Provider>
+      <MemoryRouter>
+        <AuthContext.Provider value={mockAuth}>
+          <RequireAuth>
+            <div>Protected</div>
+          </RequireAuth>
+        </AuthContext.Provider>
+      </MemoryRouter>
     )
 
-    expect(screen.getByText('Protected')).toBeInTheDocument()
+    expect(await screen.findByText('Protected')).toBeInTheDocument()
   })
 
   it('hides content when role is missing', () => {
