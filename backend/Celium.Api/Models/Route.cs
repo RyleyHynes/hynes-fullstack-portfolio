@@ -3,7 +3,8 @@ namespace Celium.Api.Models;
 public enum ActivityType
 {
     Hiking,
-    TrailRunning
+    TrailRunning,
+    RockClimbing
 }
 
 public enum Difficulty

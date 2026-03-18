@@ -333,6 +333,9 @@ export default function Explore() {
         publishedAt: editForm.publishedAt ? new Date(editForm.publishedAt).toISOString() : null,
       }, accessToken ?? undefined)
       setEditingRoute(null)
+      setIsCreateOpen(false)
+      setViewingRoute(null)
+      setSelectedRouteId(null)
       await loadRoutes()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to update route.')

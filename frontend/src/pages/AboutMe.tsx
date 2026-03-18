@@ -125,7 +125,7 @@ export default function AboutMe() {
               <MapPin />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Based in</p>
+              <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Location</p>
               <p className="text-2xl font-semibold">{profile.location}</p>
             </div>
           </div>
