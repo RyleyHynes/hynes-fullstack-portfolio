@@ -9,11 +9,27 @@ A React + TypeScript portfolio with frontend (Vite + Tailwind) and backend (.NET
 
 ## Fullstack Quick Start
 
+Note: This setup requires two terminal windows—one for the backend API and one for the frontend app. Keep both running simultaneously.
+
 ### Clone
 ```bash
 git clone https://github.com/RyleyHynes/hynes-portfolio-static.git
 cd hynes-portfolio-static
 ```
+
+### Required environment variables
+
+#### Backend (`backend/Celium.Api/appsettings.Development.json`)
+- `ConnectionStrings:Default`: `Host=localhost;Port=5432;Database=Celium;Username=Celium;Password=your_password`
+- `Auth0:Domain`: `your-tenant.us.auth0.com`
+- `Auth0:Audience`: `https://api.celium.dev`
+- `Auth0:RoleClaim`: `https://celium.app/roles` (optional)
+
+#### Frontend (`frontend/.env.local` or env mode)
+- `VITE_AUTH0_DOMAIN`: `your-tenant.us.auth0.com`
+- `VITE_AUTH0_CLIENT_ID`: Auth0 SPA client id
+- `VITE_AUTH0_AUDIENCE`: `https://api.celium.dev`
+- `VITE_CELIUM_API_URL`: `http://localhost:5270`
 
 ### Backend setup
 ```bash
@@ -59,26 +75,12 @@ npm run dev
 ```
 Open: `http://localhost:3000`
 
-### Required environment variables
-
-#### Backend (`backend/Celium.Api/appsettings.Development.json`)
-- `ConnectionStrings:Default`: `Host=localhost;Port=5432;Database=Celium;Username=Celium;Password=your_password`
-- `Auth0:Domain`: `your-tenant.us.auth0.com`
-- `Auth0:Audience`: `https://api.celium.dev`
-- `Auth0:RoleClaim`: `https://celium.app/roles` (optional)
-
-#### Frontend (`frontend/.env.local` or env mode)
-- `VITE_AUTH0_DOMAIN`: `your-tenant.us.auth0.com`
-- `VITE_AUTH0_CLIENT_ID`: Auth0 SPA client id
-- `VITE_AUTH0_AUDIENCE`: `https://api.celium.dev`
-- `VITE_CELIUM_API_URL`: `http://localhost:5270`
-
 ### Celium demo flow
 1. Click `Celium` tab.
 2. Click `Launch Selenium`.
 3. Sign in as demo user:
-   - username: `demo@example.com`
-   - password: `DemoPassword123!`
+   - username: `demo@celium.app`
+   - password: `CeliumDemo123!`
 4. Member role = read-only (create/edit/delete hidden).
 
 ### Run tests
@@ -116,24 +118,11 @@ dotnet test --no-restore
 - `ActivityType` includes `RockClimbing`
 - Climbing style/grade fields supported
 
-## Post-cleanup
-- Deleted `frontend/README.md` (single canonical README)
-
 ## Verification checklist
 - [x] `dotnet build`
 - [x] `npm run dev`
 - [x] `GET /users/me` returns roles/permissions
 - [x] permission-driven UI: read-only hides editing
 
-Celium Login:  
-Username: demo@celium.app  
-Password: CeliumDemo123!  
-
 ## Notes
-- Postgres is required locally. Install it (or at least `psql`) before running the API.
-- Create a local role + database (example):
-  - `psql -d postgres -c "CREATE ROLE \"Celium\" WITH LOGIN PASSWORD 'your_password';"`
-  - `psql -d postgres -c "CREATE DATABASE \"Celium\" OWNER \"Celium\";"`
-- Update the connection string in `backend/Celium.Api/appsettings.Development.json` with your own password:
-  - `Host=localhost;Port=5432;Database=Celium;Username=Celium;Password=your_password`
 - If you already have migrations, skip the `dotnet ef migrations add ...` step and just run `dotnet ef database update`.
