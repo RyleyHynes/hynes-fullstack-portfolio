@@ -2,10 +2,12 @@ using Celium.Api.Data;
 using Celium.Api.Contracts;
 using Celium.Api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using RouteModel = Celium.Api.Models.Route;
 
@@ -71,6 +73,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             NameClaimType = "name",
             RoleClaimType = authRoleClaim
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("[Auth] Authentication failed: " + context.Exception?.Message);
+                return Task.CompletedTask;
+            },
+            OnChallenge = async context =>
+            {
+                // prevent default redirect/body and write structured JSON
+                context.HandleResponse();
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+
+                var payload = new
+                {
+                    error = "Unauthorized",
+                    detail = context.ErrorDescription ?? context.Error ?? "Invalid or missing authorization token.",
+                    audience = auth0Audience,
+                    requiredPermission = "routes:write (or routes:create/update/delete/* if policy allows)",
+                    path = context.Request.Path
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(payload));
+            }
+        };
     });
 
 builder.Services.AddAuthorization(options =>
@@ -79,7 +108,16 @@ builder.Services.AddAuthorization(options =>
     {
         policy.RequireAuthenticatedUser();
         policy.RequireAssertion(context =>
-            context.User.HasClaim("permissions", "routes:write") || context.User.IsInRole("Admin"));
+        {
+            if (context.User.IsInRole("Admin")) return true;
+            return context.User.Claims.Any(claim =>
+                claim.Type == "permissions" &&
+                (claim.Value == "routes:write" ||
+                 claim.Value == "routes:*" ||
+                 claim.Value == "routes:create" ||
+                 claim.Value == "routes:update" ||
+                 claim.Value == "routes:delete"));
+        });
     });
 });
 
@@ -94,10 +132,40 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("celium-frontend");
+
+app.UseStatusCodePages(async context =>
+{
+    var status = context.HttpContext.Response.StatusCode;
+    if (status == StatusCodes.Status401Unauthorized || status == StatusCodes.Status403Forbidden)
+    {
+        var user = context.HttpContext.User;
+        var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToArray();
+        var permissions = user.FindAll("permissions").Select(c => c.Value).ToArray();
+
+        var response = new
+        {
+            error = status == StatusCodes.Status401Unauthorized ? "Unauthorized" : "Forbidden",
+            detail = status == StatusCodes.Status401Unauthorized
+                ? "Missing or invalid bearer token. Please re-authenticate."
+                : "Authenticated but missing required route permissions.",
+            status,
+            path = context.HttpContext.Request.Path,
+            isAuthenticated = user.Identity?.IsAuthenticated ?? false,
+            userName = user.Identity?.Name,
+            roles,
+            permissions,
+            expectedPolicy = "routes:write | routes:create/update/delete/*"
+        };
+
+        context.HttpContext.Response.ContentType = "application/json";
+        await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(response));
+    }
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/me", (ClaimsPrincipal user) =>
+app.MapGet("/users/me", (ClaimsPrincipal user) =>
 {
     var claims = user.Claims
         .GroupBy(claim => claim.Type)

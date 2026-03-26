@@ -22,6 +22,8 @@ const outcomes = [
 ]
 
 export default function CeliumProject() {
+  const publicBase = import.meta.env.BASE_URL || '/'
+
   return (
     <section className="grid gap-8">
       <header className="grid gap-3">
@@ -32,7 +34,6 @@ export default function CeliumProject() {
         </p>
         <div className="flex flex-wrap gap-3">
           <Link to="/apps/celium" className="btn-primary">Launch Celium</Link>
-          <Link to="/projects" className="btn-ghost">All Projects</Link>
         </div>
       </header>
 
@@ -67,13 +68,20 @@ export default function CeliumProject() {
 
       <div className="grid md:grid-cols-3 gap-6">
         {[
-          { title: 'Explore', copy: 'Find routes and see how others experienced them.' },
-          { title: 'Plan', copy: 'Turn routes into trip drafts.' },
-          { title: 'Support', copy: 'Help sustain ongoing development.' },
+          { title: 'Explore', copy: 'Find routes and see how others experienced them.', image: `${publicBase}explore.png` },
+          { title: 'Plan', copy: 'Turn routes into trip drafts.', image: `${publicBase}plan.png` },
+          { title: 'Support', copy: 'Help sustain ongoing development.', image: `${publicBase}shop.png` },
         ].map(panel => (
           <div key={panel.title} className="card p-5">
             <p className="text-xs uppercase tracking-[0.25em] text-slate-400">{panel.title}</p>
-            <div className="mt-4 h-36 rounded-2xl bg-gradient-to-br from-emerald-100 via-white to-sky-100 dark:from-emerald-900/40 dark:via-slate-900 dark:to-sky-900/30 border border-slate-200/60 dark:border-slate-800" />
+            <div className="mt-4 h-36 overflow-hidden rounded-2xl border border-slate-200/60 dark:border-slate-800">
+              <img
+                src={panel.image}
+                alt={`${panel.title} panel illustration`}
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
             <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">
               {panel.copy}
             </p>

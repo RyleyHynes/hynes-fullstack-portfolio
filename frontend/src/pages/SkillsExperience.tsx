@@ -21,7 +21,7 @@ export default function SkillsExperience() {
       sections: [
         { label: 'Technologies', items: ['TypeScript', 'React', 'Redux', 'RTK Query', 'React Router', 'HTML5', 'CSS3', 'SCSS', 'Tailwind', 'Bootstrap'] },
         { label: 'Practices', items: ['Accessible UI (WCAG)', 'Component systems', 'State management', 'Responsive layouts'], plain: true },
-        { label: 'Tools', items: ['Figma', 'Neutron DS', 'Chrome DevTools'] },
+        { label: 'Tools', items: ['Figma', 'Neutron DS', 'Tailwind', 'Chrome DevTools'] },
       ],
     },
     {
@@ -85,7 +85,7 @@ export default function SkillsExperience() {
       <header className="space-y-3">
         <h2 className="section-title">Tech Stack & Skills</h2>
         <p className="text-slate-600 dark:text-slate-300">
-          Frontend-leaning full-stack engineer focused on accessible UIs, clean architecture, and reliable delivery.
+          Full-stack engineer focused on accessible UIs, clean architecture, and reliable delivery.
         </p>
       </header>
 

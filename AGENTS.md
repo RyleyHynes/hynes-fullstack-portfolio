@@ -9,8 +9,10 @@ These instructions apply to Codex edits in this repository.
 - If a reusable component exists and can be extended safely, update that component instead of duplicating UI patterns inline.
 - Avoid replacing existing reusable components with ad hoc JSX unless explicitly requested.
 
-## JSX Prop Ordering
+## React imports and JSX Prop Ordering
 
+- Avoid global React namespace imports like `import React from 'react'` where specific named exports are available.
+- Import hooks explicitly, e.g. `import { useEffect, useMemo } from 'react'`.
 - In JSX elements, order non-callback props alphabetically by prop name.
 - Keep callback props grouped at the bottom of the prop list.
 - Callback props are function/event props such as: `onClick`, `onChange`, `onSubmit`, `onClose`, `onSelect`, and similar `on*` props.

@@ -35,6 +35,13 @@ const mockRoutes = [
 vi.mock('@/features/api/celiumRoutes', () => ({
   createRoute: vi.fn(),
   deleteRoute: vi.fn(),
+  getCurrentUser: vi.fn(() => Promise.resolve({
+    isAuthenticated: true,
+    name: 'Test User',
+    roles: [],
+    permissions: ['routes:*'],
+    claims: {},
+  })),
   listRoutes: vi.fn(() => Promise.resolve(mockRoutes)),
   updateRoute: vi.fn(),
 }))
@@ -96,6 +103,7 @@ describe('Explore', () => {
       </AuthProvider>
     )
 
+    await screen.findByText('Create route')
     fireEvent.click(screen.getByText('Create route'))
     fireEvent.change(screen.getByLabelText('Name *'), { target: { value: 'Skyline Ridge' } })
     fireEvent.change(screen.getByLabelText('Distance (miles) *'), { target: { value: '6.2' } })

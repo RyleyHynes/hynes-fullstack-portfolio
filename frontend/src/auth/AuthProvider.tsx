@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { type ReactNode, useEffect } from 'react'
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react'
 import { authConfig, authEnabled } from './authConfig'
 import { AuthContext } from './AuthContext'
@@ -45,7 +45,7 @@ const AuthBridge = ({ children }: AuthProviderProps) => {
     isLoading,
     user,
     loginWithRedirect,
-    logout,
+    logout: auth0Logout,
     getAccessTokenSilently,
   } = useAuth0()
 
@@ -64,9 +64,20 @@ const AuthBridge = ({ children }: AuthProviderProps) => {
         })
       },
       logout: () => {
-        logout({
+        // Clear local session markers and Auth0 cache on sign-out
+        const sessionMarker = 'celium-session-active'
+        sessionStorage.removeItem(sessionMarker)
+        Object.keys(localStorage).forEach((key) => {
+          if (key.startsWith('@@auth0spajs@@')) {
+            localStorage.removeItem(key)
+          }
+        })
+
+        const logoutReturnTo = `${window.location.origin}${basePath === '/' ? '' : basePath}/apps/celium`
+
+        auth0Logout({
           logoutParams: {
-            returnTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
+            returnTo: logoutReturnTo,
           },
         })
       },
@@ -88,6 +99,27 @@ const AuthBridge = ({ children }: AuthProviderProps) => {
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {
+  // Keep auth state in localStorage (Auth0 SDK supports it). Use a session marker to clear on a fresh tab/window open.
+  useEffect(() => {
+    if (!authEnabled) {
+      return
+    }
+
+    const sessionMarker = 'celium-session-active'
+    const isCallback = new URLSearchParams(window.location.search).has('code')
+    const hadSession = sessionStorage.getItem(sessionMarker) === '1'
+
+    if (!hadSession && !isCallback) {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('@@auth0spajs@@')) {
+          localStorage.removeItem(key)
+        }
+      })
+    }
+
+    sessionStorage.setItem(sessionMarker, '1')
+  }, [])
+
   if (!authEnabled) {
     return <FallbackProvider>{children}</FallbackProvider>
   }
