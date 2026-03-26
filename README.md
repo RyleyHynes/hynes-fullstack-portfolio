@@ -22,9 +22,10 @@ npm run dev
 ```
 
 Frontend: http://localhost:3000
-Celium Login:
-Username: demo@celium.app
-Password: CeliumDemo123!
+
+Celium Login:  
+Username: demo@celium.app  
+Password: CeliumDemo123!  
 
 ## Notes
 - Postgres is required locally. Install it (or at least `psql`) before running the API.
