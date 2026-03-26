@@ -5,7 +5,7 @@
 export const profile = {
   name: 'Ryley Hynes',
   title: 'Full‑Stack Application Engineer',
-  location: 'Nashville, TN',
+  location: 'Remote (US) — open to relocation',
   email: 'RyleyHynes@gmail.com',
   phone: '(518) 813‑2692',
   github: 'https://github.com/RyleyHynes',

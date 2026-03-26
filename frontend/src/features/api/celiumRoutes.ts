@@ -41,6 +41,14 @@ export type CreateRoutePayload = Omit<
 >
 export type UpdateRoutePayload = CreateRoutePayload
 
+export type CurrentUser = {
+  isAuthenticated: boolean
+  name?: string
+  roles: string[]
+  permissions: string[]
+  claims: Record<string, string[]>
+}
+
 const resolveBaseUrl = () => (
   import.meta.env.VITE_CELIUM_API_URL
     ?? (import.meta.env.PROD ? '/api/celium' : 'http://localhost:5270')
@@ -50,8 +58,23 @@ const baseUrl = resolveBaseUrl()
 
 const handleResponse = async <T>(response: Response) => {
   if (!response.ok) {
-    const message = await response.text()
-    throw new Error(message || `Request failed (${response.status})`)
+    const contentType = response.headers.get('content-type') || ''
+    let detail = `Request failed (${response.status})`
+
+    if (contentType.includes('application/json')) {
+      try {
+        const json = await response.json()
+        detail = json.error ?? json.message ?? JSON.stringify(json)
+      } catch {
+        // fallback to text
+      }
+    } else {
+      const text = await response.text()
+      detail = text || detail
+    }
+
+    const message = `${response.status} ${response.statusText}: ${detail}`
+    throw new Error(message)
   }
   return response.json() as Promise<T>
 }
@@ -101,3 +124,8 @@ export const deleteRoute = async (id: string, accessToken?: string) => {
     throw new Error(message || `Request failed (${response.status})`)
   }
 }
+
+export const getCurrentUser = async (accessToken?: string) =>
+  handleResponse<CurrentUser>(await fetch(`${baseUrl}/users/me`, {
+    headers: buildHeaders(accessToken),
+  }))

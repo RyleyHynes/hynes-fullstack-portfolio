@@ -6,7 +6,7 @@ describe('SkillsExperience page', () => {
     render(<SkillsExperience />)
 
     expect(screen.getByRole('heading', { name: 'Tech Stack & Skills' })).toBeInTheDocument()
-    expect(screen.getByText(/Frontend-leaning full-stack engineer/i)).toBeInTheDocument()
+    expect(screen.getByText(/Full-stack engineer/i)).toBeInTheDocument()
   })
 
   it('renders all category cards with sample items', () => {

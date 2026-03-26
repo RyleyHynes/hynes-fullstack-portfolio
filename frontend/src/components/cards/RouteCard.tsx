@@ -8,8 +8,8 @@ type RouteCardProps = {
   route: RouteModel
   href: string
   onView: (route: RouteModel) => void
-  onEdit: (route: RouteModel) => void
-  onDelete: (route: RouteModel) => void
+  onEdit?: (route: RouteModel) => void
+  onDelete?: (route: RouteModel) => void
   onSelect?: (route: RouteModel) => void
   coverImage?: string | null
 }
@@ -73,26 +73,30 @@ const RouteCard = forwardRef<HTMLDivElement, RouteCardProps>(
         >
           View
         </Button>
-        <Button
-          variant="text"
-          className="text-xs text-emerald-600 hover:text-emerald-500"
-          onClick={(event) => {
-            event.stopPropagation()
-            onEdit(route)
-          }}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="text"
-          className="text-xs text-rose-600 hover:text-rose-500"
-          onClick={(event) => {
-            event.stopPropagation()
-            onDelete(route)
-          }}
-        >
-          Delete
-        </Button>
+        {onEdit ? (
+          <Button
+            variant="text"
+            className="text-xs text-emerald-600 hover:text-emerald-500"
+            onClick={(event) => {
+              event.stopPropagation()
+              onEdit(route)
+            }}
+          >
+            Edit
+          </Button>
+        ) : null}
+        {onDelete ? (
+          <Button
+            variant="text"
+            className="text-xs text-rose-600 hover:text-rose-500"
+            onClick={(event) => {
+              event.stopPropagation()
+              onDelete(route)
+            }}
+          >
+            Delete
+          </Button>
+        ) : null}
       </div>
     </div>
   )
