@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   createRoute,
   deleteRoute,
+  getCurrentUser,
   listRoutes,
   updateRoute,
   type ActivityType,
@@ -45,7 +46,17 @@ export default function Explore() {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null)
   const routeRefs = useRef<Record<string, HTMLDivElement | null>>({})
-  const { isAuthenticated, login, getAccessToken } = useAuth()
+  const { isAuthenticated, login, getAccessToken, hasPermission } = useAuth()
+  const [userPermissions, setUserPermissions] = useState<string[]>([])
+
+  const canManageRoutes = useMemo(() => (
+    userPermissions.some(p => ['routes:*', 'routes:write', 'routes:create', 'routes:update', 'routes:delete'].includes(p))
+    || hasPermission('routes:*')
+    || hasPermission('routes:write')
+    || hasPermission('routes:create')
+    || hasPermission('routes:update')
+    || hasPermission('routes:delete')
+  ), [hasPermission, userPermissions])
 
   const parseCoordinate = (raw: string, kind: 'lat' | 'lng') => {
     const value = raw.trim().toUpperCase()
@@ -130,7 +141,22 @@ export default function Explore() {
 
   useEffect(() => {
     loadRoutes()
-  }, [])
+
+    const fetchUser = async () => {
+      if (!isAuthenticated) return
+      try {
+        const token = await getAccessToken()
+        if (!token) return
+
+        const user = await getCurrentUser(token)
+        setUserPermissions(user.permissions ?? [])
+      } catch {
+        setUserPermissions([])
+      }
+    }
+
+    void fetchUser()
+  }, [isAuthenticated, getAccessToken])
 
   useEffect(() => {
     if (!navigator.geolocation) return
@@ -372,9 +398,13 @@ export default function Explore() {
         )}
         filters={<FilterChips items={filters} />}
         actions={(
-          <Button variant="primary" type="button" onClick={handleCreateClick}>
-            Create route
-          </Button>
+          canManageRoutes ? (
+            <Button variant="primary" type="button" onClick={handleCreateClick}>
+              Create route
+            </Button>
+          ) : (
+            <span className="text-sm text-slate-500">Read-only access: no route modification allowed.</span>
+          )
         )}
       />
 
@@ -414,8 +444,8 @@ export default function Explore() {
                 route={route}
                 href={`/apps/celium/explore/routes/${route.id}`}
                 onView={openView}
-                onEdit={openEdit}
-                onDelete={setDeleteTarget}
+                onEdit={canManageRoutes ? openEdit : undefined}
+                onDelete={canManageRoutes ? setDeleteTarget : undefined}
                 onSelect={(selected) => setSelectedRouteId(selected.id)}
                 coverImage={coverImage}
               />

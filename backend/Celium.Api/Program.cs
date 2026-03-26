@@ -165,7 +165,7 @@ app.UseStatusCodePages(async context =>
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/me", (ClaimsPrincipal user) =>
+app.MapGet("/users/me", (ClaimsPrincipal user) =>
 {
     var claims = user.Claims
         .GroupBy(claim => claim.Type)
