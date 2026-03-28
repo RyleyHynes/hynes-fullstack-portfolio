@@ -31,8 +31,9 @@ const useRoutePermissions = ({ getAccessToken, isAuthenticated }: UseRoutePermis
         if (!active) return
         setCanManage(false)
       } finally {
-        if (!active) return
-        setIsLoading(false)
+        if (active) {
+          setIsLoading(false)
+        }
       }
     }
 
@@ -47,4 +48,3 @@ const useRoutePermissions = ({ getAccessToken, isAuthenticated }: UseRoutePermis
 }
 
 export default useRoutePermissions
-
