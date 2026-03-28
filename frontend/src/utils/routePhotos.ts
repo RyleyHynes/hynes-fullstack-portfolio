@@ -1,17 +1,13 @@
-import { rainierPhotos } from '@/assets/trips/rainier'
-import { tetonPhotos } from '@/assets/trips/teton'
-import { whitneyPhotos } from '@/assets/trips/whitney'
-import { lookingGlassPhotos } from '@/assets/trips/looking-glass'
+import { routeMetadata } from '@/celium/routeMetadata'
 
 const normalizeName = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
 
-const photoMap: Record<string, readonly string[]> = {
-  disappointmentcleaver: rainierPhotos,
-  eastbuttress: whitneyPhotos,
-  owenspalding: tetonPhotos,
-  lookingglass: lookingGlassPhotos,
-  thenose: lookingGlassPhotos,
-}
+const photoMap = routeMetadata.reduce<Record<string, readonly string[]>>((accumulator, entry) => {
+  entry.aliases.forEach((alias) => {
+    accumulator[normalizeName(alias)] = entry.photos
+  })
+  return accumulator
+}, {})
 
 export const getRoutePhotos = (routeName: string) => (
   photoMap[normalizeName(routeName)] ?? []

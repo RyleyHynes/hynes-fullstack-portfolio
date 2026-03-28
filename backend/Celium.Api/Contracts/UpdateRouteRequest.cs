@@ -7,6 +7,8 @@ public record UpdateRouteRequest(
     string Summary,
     string? Description,
     ActivityType ActivityType,
+    ClimbingStyle? ClimbingStyle,
+    string? ClimbingGrade,
     Difficulty Difficulty,
     double DistanceMiles,
     int ElevationGainFt,
@@ -20,4 +22,5 @@ public record UpdateRouteRequest(
     double EndLatitude,
     double EndLongitude,
     RouteStatus Status,
+    RouteProgress Progress,
     DateTime? PublishedAt);

@@ -98,7 +98,7 @@ const AuthBridge = ({ children }: AuthProviderProps) => {
   )
 }
 
-export default function AuthProvider({ children }: AuthProviderProps) {
+const AuthProvider = ({ children }: AuthProviderProps) => {
   // Keep auth state in localStorage (Auth0 SDK supports it). Use a session marker to clear on a fresh tab/window open.
   useEffect(() => {
     if (!authEnabled) {
@@ -145,3 +145,5 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     </Auth0Provider>
   )
 }
+
+export default AuthProvider

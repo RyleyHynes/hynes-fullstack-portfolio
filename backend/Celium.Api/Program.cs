@@ -110,13 +110,20 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAssertion(context =>
         {
             if (context.User.IsInRole("Admin")) return true;
-            return context.User.Claims.Any(claim =>
-                claim.Type == "permissions" &&
-                (claim.Value == "routes:write" ||
-                 claim.Value == "routes:*" ||
-                 claim.Value == "routes:create" ||
-                 claim.Value == "routes:update" ||
-                 claim.Value == "routes:delete"));
+
+            var permissions = context.User.FindAll("permissions")
+                .Select(claim => claim.Value)
+                .Concat(
+                    context.User.FindAll("scope")
+                        .SelectMany(claim => claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                )
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return permissions.Contains("routes:write")
+                || permissions.Contains("routes:*")
+                || permissions.Contains("routes:create")
+                || permissions.Contains("routes:update")
+                || permissions.Contains("routes:delete");
         });
     });
 });
@@ -139,8 +146,19 @@ app.UseStatusCodePages(async context =>
     if (status == StatusCodes.Status401Unauthorized || status == StatusCodes.Status403Forbidden)
     {
         var user = context.HttpContext.User;
-        var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToArray();
-        var permissions = user.FindAll("permissions").Select(c => c.Value).ToArray();
+        var roles = user.FindAll(ClaimTypes.Role)
+            .Select(c => c.Value)
+            .Concat(user.FindAll(authRoleClaim).Select(c => c.Value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        var permissions = user.FindAll("permissions")
+            .Select(c => c.Value)
+            .Concat(
+                user.FindAll("scope")
+                    .SelectMany(claim => claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            )
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
 
         var response = new
         {
@@ -165,8 +183,21 @@ app.UseStatusCodePages(async context =>
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/users/me", (ClaimsPrincipal user) =>
+IResult BuildMeResponse(ClaimsPrincipal user)
 {
+    var roles = user.FindAll(ClaimTypes.Role)
+        .Select(claim => claim.Value)
+        .Concat(user.FindAll(authRoleClaim).Select(claim => claim.Value))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+    var permissions = user.FindAll("permissions")
+        .Select(claim => claim.Value)
+        .Concat(
+            user.FindAll("scope")
+                .SelectMany(claim => claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        )
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
     var claims = user.Claims
         .GroupBy(claim => claim.Type)
         .ToDictionary(group => group.Key, group => group.Select(claim => claim.Value).ToArray());
@@ -175,11 +206,14 @@ app.MapGet("/users/me", (ClaimsPrincipal user) =>
     {
         IsAuthenticated = user.Identity?.IsAuthenticated ?? false,
         Name = user.Identity?.Name,
-        Roles = user.FindAll(ClaimTypes.Role).Select(role => role.Value).ToArray(),
-        Permissions = user.FindAll("permissions").Select(permission => permission.Value).ToArray(),
+        Roles = roles,
+        Permissions = permissions,
         Claims = claims
     });
-}).RequireAuthorization();
+}
+
+app.MapGet("/users/me", BuildMeResponse).RequireAuthorization();
+app.MapGet("/me", BuildMeResponse).RequireAuthorization();
 
 var routes = app.MapGroup("/routes")
     .WithOpenApi()
@@ -197,6 +231,14 @@ routes.MapGet("/{id:guid}", async (Guid id, CeliumDbContext db) =>
     return route is null ? Results.NotFound() : Results.Ok(route);
 });
 
+routes.MapGet("/can-manage", () =>
+{
+    return Results.Ok(new
+    {
+        CanManage = true
+    });
+}).RequireAuthorization("routes:write");
+
 routes.MapPost("/", async (CreateRouteRequest request, CeliumDbContext db) =>
 {
     var now = DateTime.UtcNow;
@@ -207,6 +249,8 @@ routes.MapPost("/", async (CreateRouteRequest request, CeliumDbContext db) =>
         Summary = request.Summary,
         Description = request.Description,
         ActivityType = request.ActivityType,
+        ClimbingStyle = request.ClimbingStyle,
+        ClimbingGrade = request.ClimbingGrade,
         Difficulty = request.Difficulty,
         DistanceMiles = request.DistanceMiles,
         ElevationGainFt = request.ElevationGainFt,
@@ -223,6 +267,7 @@ routes.MapPost("/", async (CreateRouteRequest request, CeliumDbContext db) =>
         LandscapeTypeId = defaultLandscapeTypeId,
         RegionId = defaultRegionId,
         Status = request.Status,
+        Progress = request.Progress,
         CreatedAt = now,
         UpdatedAt = now,
         PublishedAt = request.PublishedAt
@@ -245,6 +290,8 @@ routes.MapPut("/{id:guid}", async (Guid id, UpdateRouteRequest request, CeliumDb
     route.Summary = request.Summary;
     route.Description = request.Description;
     route.ActivityType = request.ActivityType;
+    route.ClimbingStyle = request.ClimbingStyle;
+    route.ClimbingGrade = request.ClimbingGrade;
     route.Difficulty = request.Difficulty;
     route.DistanceMiles = request.DistanceMiles;
     route.ElevationGainFt = request.ElevationGainFt;
@@ -261,6 +308,7 @@ routes.MapPut("/{id:guid}", async (Guid id, UpdateRouteRequest request, CeliumDb
     route.LandscapeTypeId = defaultLandscapeTypeId;
     route.RegionId = defaultRegionId;
     route.Status = request.Status;
+    route.Progress = request.Progress;
     route.PublishedAt = request.PublishedAt;
     route.UpdatedAt = DateTime.UtcNow;
 

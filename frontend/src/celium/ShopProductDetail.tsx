@@ -1,8 +1,9 @@
 import { Link, useParams } from 'react-router-dom'
+import Button from '@/components/buttons/Button'
 import ActionBar from '@/components/layout/ActionBar'
 import CardHeader from '@/components/layout/CardHeader'
 
-export default function ShopProductDetail() {
+const ShopProductDetail = () => {
   const { productId } = useParams()
 
   return (
@@ -33,10 +34,12 @@ export default function ShopProductDetail() {
             <p className="text-2xl font-semibold text-emerald-600">$249</p>
           </div>
           <ActionBar className="mt-4">
-            <button className="btn-primary w-full">Add to Gear List</button>
+            <Button className="w-full" variant="primary">Add to Gear List</Button>
           </ActionBar>
         </aside>
       </div>
     </section>
   )
 }
+
+export default ShopProductDetail

@@ -33,6 +33,7 @@ const mockRoutes = [
 ]
 
 vi.mock('@/features/api/celiumRoutes', () => ({
+  canManageRoutes: vi.fn(() => Promise.resolve(true)),
   createRoute: vi.fn(),
   deleteRoute: vi.fn(),
   getCurrentUser: vi.fn(() => Promise.resolve({

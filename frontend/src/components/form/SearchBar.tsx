@@ -8,7 +8,7 @@ type SearchBarProps = {
   label?: string
 }
 
-export default function SearchBar({ value, onChange, placeholder, className = '', label }: SearchBarProps) {
+const SearchBar = ({ value, onChange, placeholder, className = '', label }: SearchBarProps) => {
   return (
     <input
       className={`rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-4 py-3 text-sm ${className}`.trim()}
@@ -19,3 +19,5 @@ export default function SearchBar({ value, onChange, placeholder, className = ''
     />
   )
 }
+
+export default SearchBar

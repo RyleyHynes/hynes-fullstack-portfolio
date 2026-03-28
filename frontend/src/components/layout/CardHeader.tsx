@@ -6,7 +6,7 @@ type CardHeaderProps = {
   action?: ReactNode
 }
 
-export default function CardHeader({ title, subtitle, action }: CardHeaderProps) {
+const CardHeader = ({ title, subtitle, action }: CardHeaderProps) => {
   return (
     <div className="flex items-start justify-between gap-4">
       <div>
@@ -17,3 +17,5 @@ export default function CardHeader({ title, subtitle, action }: CardHeaderProps)
     </div>
   )
 }
+
+export default CardHeader

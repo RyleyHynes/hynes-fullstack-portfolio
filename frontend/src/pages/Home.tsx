@@ -8,7 +8,7 @@ import Badge from '@/components/data-display/Badge'
 /**
  * Landing page hero plus teaser cards for select projects.
  */
-export default function Home() {
+const Home = () => {
   return (
     <section className="grid gap-10">
       <div className="card p-10 text-slate-900 dark:text-slate-100">
@@ -75,3 +75,5 @@ export default function Home() {
     </section>
   )
 }
+
+export default Home

@@ -12,7 +12,7 @@ type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
   options: SelectOption[]
 }
 
-export default function Select({ label, helper, error, options, className = '', ...props }: SelectProps) {
+const Select = ({ label, helper, error, options, className = '', ...props }: SelectProps) => {
   return (
     <label className="grid gap-2 text-xs text-slate-500">
       {label ? <span>{label}</span> : null}
@@ -31,3 +31,5 @@ export default function Select({ label, helper, error, options, className = '', 
     </label>
   )
 }
+
+export default Select

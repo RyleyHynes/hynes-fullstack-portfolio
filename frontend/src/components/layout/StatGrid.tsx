@@ -10,7 +10,7 @@ type StatGridProps = {
   className?: string
 }
 
-export default function StatGrid({ stats, className = '' }: StatGridProps) {
+const StatGrid = ({ stats, className = '' }: StatGridProps) => {
   return (
     <div className={`grid sm:grid-cols-2 gap-4 ${className}`.trim()}>
       {stats.map(stat => (
@@ -22,3 +22,5 @@ export default function StatGrid({ stats, className = '' }: StatGridProps) {
     </div>
   )
 }
+
+export default StatGrid

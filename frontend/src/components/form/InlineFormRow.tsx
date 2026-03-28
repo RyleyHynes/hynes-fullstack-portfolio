@@ -7,7 +7,7 @@ type InlineFormRowProps = {
   className?: string
 }
 
-export default function InlineFormRow({ label, helper, children, className = '' }: InlineFormRowProps) {
+const InlineFormRow = ({ label, helper, children, className = '' }: InlineFormRowProps) => {
   return (
     <label className={`grid gap-2 text-xs text-slate-500 ${className}`.trim()}>
       <span>{label}</span>
@@ -16,3 +16,5 @@ export default function InlineFormRow({ label, helper, children, className = '' 
     </label>
   )
 }
+
+export default InlineFormRow

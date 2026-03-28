@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import Button from '@/components/buttons/Button'
 import ActionBar from '@/components/layout/ActionBar'
 import Badge from '@/components/data-display/Badge'
 import CardHeader from '@/components/layout/CardHeader'
@@ -16,7 +17,7 @@ const participants = [
   { name: 'Jamie Park', role: 'Partner' },
 ]
 
-export default function PlanTripDetail() {
+const PlanTripDetail = () => {
   const { tripId } = useParams()
 
   return (
@@ -59,7 +60,7 @@ export default function PlanTripDetail() {
             ))}
           </ul>
           <ActionBar className="mt-4">
-            <button className="btn-ghost">Apply Template</button>
+            <Button>Apply Template</Button>
           </ActionBar>
           <div className="mt-4 grid gap-2">
             <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Participants</p>
@@ -74,3 +75,5 @@ export default function PlanTripDetail() {
     </section>
   )
 }
+
+export default PlanTripDetail

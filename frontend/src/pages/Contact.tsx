@@ -4,7 +4,7 @@ import { Mail, Phone, Github, Linkedin } from 'lucide-react'
 /**
  * Contact options supporting direct outreach across channels.
  */
-export default function Contact() {
+const Contact = () => {
   /**
    * Normalized list of connection methods and their associated icons/links.
    */
@@ -61,3 +61,5 @@ export default function Contact() {
     </section>
   )
 }
+
+export default Contact

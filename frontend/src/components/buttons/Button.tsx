@@ -1,6 +1,6 @@
 import { type ButtonHTMLAttributes } from 'react'
 
-type ButtonVariant = 'primary' | 'ghost' | 'text' | 'danger'
+type ButtonVariant = 'primary' | 'ghost' | 'text' | 'danger' | 'unstyled'
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant
@@ -11,10 +11,13 @@ const variants: Record<ButtonVariant, string> = {
   ghost: 'btn-ghost',
   text: 'text-sm text-slate-600 hover:text-emerald-600 transition-colors',
   danger: 'btn-primary bg-rose-600 hover:bg-rose-500',
+  unstyled: '',
 }
 
-export default function Button({ variant = 'ghost', className = '', ...props }: ButtonProps) {
+const Button = ({ variant = 'ghost', className = '', ...props }: ButtonProps) => {
   return (
     <button className={`${variants[variant]} ${className}`.trim()} {...props} />
   )
 }
+
+export default Button

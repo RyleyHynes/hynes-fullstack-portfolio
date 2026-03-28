@@ -8,7 +8,7 @@ type EmptyStateProps = {
   className?: string
 }
 
-export default function EmptyState({ title, description, action, className = '' }: EmptyStateProps) {
+const EmptyState = ({ title, description, action, className = '' }: EmptyStateProps) => {
   return (
     <Card className={`p-4 text-sm text-slate-500 ${className}`.trim()}>
       <div className="grid gap-2">
@@ -19,3 +19,5 @@ export default function EmptyState({ title, description, action, className = '' 
     </Card>
   )
 }
+
+export default EmptyState

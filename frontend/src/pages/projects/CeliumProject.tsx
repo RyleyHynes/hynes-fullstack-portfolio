@@ -21,7 +21,7 @@ const outcomes = [
   { label: 'Status', value: 'Active build with CRUD API + app shell' },
 ]
 
-export default function CeliumProject() {
+const CeliumProject = () => {
   const publicBase = import.meta.env.BASE_URL || '/'
 
   return (
@@ -91,3 +91,5 @@ export default function CeliumProject() {
     </section>
   )
 }
+
+export default CeliumProject

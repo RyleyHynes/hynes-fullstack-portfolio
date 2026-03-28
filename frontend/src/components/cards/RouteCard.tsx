@@ -13,7 +13,6 @@ type RouteCardProps = {
   onSelect?: (route: RouteModel) => void
   coverImage?: string | null
 }
-
 const RouteCard = forwardRef<HTMLDivElement, RouteCardProps>(
   ({ route, href, onView, onEdit, onDelete, onSelect, coverImage }, ref) => (
     <div

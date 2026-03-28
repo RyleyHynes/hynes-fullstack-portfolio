@@ -9,7 +9,7 @@ type PaginationProps = {
   label?: ReactNode
 }
 
-export default function Pagination({ currentPage, totalPages, onChange, className = '', label }: PaginationProps) {
+const Pagination = ({ currentPage, totalPages, onChange, className = '', label }: PaginationProps) => {
   const canPrev = currentPage > 1
   const canNext = currentPage < totalPages
 
@@ -28,3 +28,5 @@ export default function Pagination({ currentPage, totalPages, onChange, classNam
     </div>
   )
 }
+
+export default Pagination

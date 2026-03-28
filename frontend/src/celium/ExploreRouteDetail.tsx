@@ -44,7 +44,7 @@ type RouteFormState = {
   publishedAt: string
 }
 
-export default function ExploreRouteDetail() {
+const ExploreRouteDetail = () => {
   const { routeId } = useParams()
   const [route, setRoute] = useState<RouteModel | null>(null)
   const [draft, setDraft] = useState<RouteFormState | null>(null)
@@ -105,16 +105,40 @@ export default function ExploreRouteDetail() {
     setDraft(current => (current ? { ...current, [field]: value } : current))
   }
 
-  const handleUpdate = async (event: FormEvent) => {
-    event.preventDefault()
+  const handleUpdate = async () => {
     if (!routeId || !draft) return
     setError(null)
+
+    // Validate required fields
+    if (!draft.name.trim() || !draft.summary.trim() || !draft.distanceMiles.trim() || !draft.elevationGainFt.trim()) {
+      setError('Name, summary, distance, and elevation gain are required.')
+      return
+    }
+
+    // Coordinates are required by the API contract, even though this view does not expose edits for them.
+    const startLat = Number(draft.startLatitude)
+    const startLng = Number(draft.startLongitude)
+    const endLat = Number(draft.endLatitude)
+    const endLng = Number(draft.endLongitude)
+    if (
+      !Number.isFinite(startLat) || !Number.isFinite(startLng)
+      || !Number.isFinite(endLat) || !Number.isFinite(endLng)
+    ) {
+      setError('Route coordinates are invalid. Reload the route and try again.')
+      return
+    }
+
     try {
       if (!isAuthenticated) {
         await login({ returnTo: `/apps/celium/explore/routes/${routeId}` })
         return
       }
       const accessToken = await getAccessToken()
+      if (!accessToken) {
+        setError('Session expired. Please sign in again.')
+        await login({ returnTo: `/apps/celium/explore/routes/${routeId}` })
+        return
+      }
       const updated = await updateRoute(routeId, {
         name: draft.name,
         summary: draft.summary,
@@ -130,18 +154,24 @@ export default function ExploreRouteDetail() {
         minElevationFt: draft.minElevationFt ? Number(draft.minElevationFt) : null,
         estimatedTimeMinutes: draft.estimatedTimeMinutes ? Number(draft.estimatedTimeMinutes) : null,
         loopType: draft.loopType,
-        startLatitude: Number(draft.startLatitude),
-        startLongitude: Number(draft.startLongitude),
-        endLatitude: Number(draft.endLatitude),
-        endLongitude: Number(draft.endLongitude),
+        startLatitude: startLat,
+        startLongitude: startLng,
+        endLatitude: endLat,
+        endLongitude: endLng,
         status: draft.status,
         progress: draft.progress,
         publishedAt: draft.publishedAt ? new Date(draft.publishedAt).toISOString() : null,
-      }, accessToken ?? undefined)
+      }, accessToken)
       setRoute(updated)
+      await loadRoute()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to update route.')
     }
+  }
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault()
+    await handleUpdate()
   }
 
   const handleDelete = async () => {
@@ -170,7 +200,7 @@ export default function ExploreRouteDetail() {
         <EmptyState title="Loading route..." />
       ) : null}
       {error ? (
-        <EmptyState title="Unable to load route." description={error} />
+        <EmptyState title="Route request failed." description={error} />
       ) : null}
       {!isLoading && !route ? (
         <EmptyState title="Route not found." description="Check the route ID and try again." />
@@ -220,7 +250,7 @@ export default function ExploreRouteDetail() {
       </div>
 
       {draft ? (
-        <form className="card p-6 grid gap-4" onSubmit={handleUpdate}>
+        <form className="card p-6 grid gap-4" onSubmit={handleSubmit}>
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Update route</h3>
             <span className="text-xs text-slate-400">PUT /routes/{routeId}</span>
@@ -269,16 +299,16 @@ export default function ExploreRouteDetail() {
             </div>
             <div className="grid gap-2">
               <InlineFormRow label="Difficulty">
-              <select
-                className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
-                value={draft.difficulty}
-                onChange={(event) => handleChange('difficulty', event.target.value)}
-              >
-                <option value="Easy">Easy</option>
-                <option value="Moderate">Moderate</option>
-                <option value="Hard">Hard</option>
-                <option value="Expert">Expert</option>
-              </select>
+                <select
+                  className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-white/5 px-3 py-2 text-sm"
+                  value={draft.difficulty}
+                  onChange={(event) => handleChange('difficulty', event.target.value)}
+                >
+                  <option value="Easy">Easy</option>
+                  <option value="Moderate">Moderate</option>
+                  <option value="Hard">Hard</option>
+                  <option value="Expert">Expert</option>
+                </select>
               </InlineFormRow>
             </div>
             <div className="grid gap-2">
@@ -329,8 +359,14 @@ export default function ExploreRouteDetail() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <button className="btn-primary" type="submit">Save changes</button>
-            <button className="btn-ghost" type="button" onClick={loadRoute}>Reset</button>
+            <Button
+              type="submit"
+              variant="primary"
+              onClick={() => console.log('bleep')}
+            >
+              Save changes
+            </Button>
+            <Button variant="ghost" type="button" onClick={loadRoute}>Reset</Button>
           </div>
         </form>
       ) : null}
@@ -345,3 +381,5 @@ export default function ExploreRouteDetail() {
     </section>
   )
 }
+
+export default ExploreRouteDetail

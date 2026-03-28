@@ -6,7 +6,7 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: string
 }
 
-export default function Input({ label, helper, error, className = '', ...props }: InputProps) {
+const Input = ({ label, helper, error, className = '', ...props }: InputProps) => {
   return (
     <label className="grid gap-2 text-xs text-slate-500">
       {label ? <span>{label}</span> : null}
@@ -19,3 +19,5 @@ export default function Input({ label, helper, error, className = '', ...props }
     </label>
   )
 }
+
+export default Input

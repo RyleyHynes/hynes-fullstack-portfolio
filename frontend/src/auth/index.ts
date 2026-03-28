@@ -1,5 +1,5 @@
 export { default as AuthProvider } from './AuthProvider'
 export { default as RequireAuth } from './RequireAuth'
 export { default as RequireRole } from './RequireRole'
-export { useAuth } from './AuthContext'
+export { useAuth, type AuthContextType } from './AuthContext'
 export { authConfig, authEnabled } from './authConfig'

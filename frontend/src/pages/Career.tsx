@@ -6,7 +6,7 @@ import type { LucideIcon } from 'lucide-react'
  * Timeline and narrative of professional and education experience.
  * Pulls structured data from `profile` plus localized environmental science history.
  */
-export default function Career() {
+const Career = () => {
   const ut = education.find((ed) => ed.school.includes('Tennessee'))
   const hca = experience.find((exp) => exp.company === 'HCA Healthcare')
 
@@ -245,3 +245,5 @@ export default function Career() {
     </section>
   )
 }
+
+export default Career

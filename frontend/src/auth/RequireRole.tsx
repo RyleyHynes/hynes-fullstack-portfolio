@@ -7,8 +7,10 @@ type RequireRoleProps = {
   children: ReactNode
 }
 
-export default function RequireRole({ role, fallback = null, children }: RequireRoleProps) {
+const RequireRole = ({ role, fallback = null, children }: RequireRoleProps) => {
   const { hasRole } = useAuth()
   if (!hasRole(role)) return <>{fallback}</>
   return <>{children}</>
 }
+
+export default RequireRole
