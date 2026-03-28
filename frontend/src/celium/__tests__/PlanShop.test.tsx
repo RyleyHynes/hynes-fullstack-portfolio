@@ -45,21 +45,22 @@ describe('Plan and Shop pages', () => {
     )
 
     expect(screen.getByText('Build a trip that stacks the odds in your favor.')).toBeInTheDocument()
-    expect(screen.getByText('Start a new trip.')).toBeInTheDocument()
-    expect(await screen.findByText('Skyline Ridge Traverse')).toBeInTheDocument()
+    expect((await screen.findAllByText('Matterhorn Mountaineering Journey')).length).toBeGreaterThan(0)
+    expect(screen.getByText('To do')).toBeInTheDocument()
+    expect(screen.getByText('Completed')).toBeInTheDocument()
   })
 
-  it('renders plan trip detail', () => {
+  it('renders plan trip detail', async () => {
     render(
-      <MemoryRouter initialEntries={['/apps/celium/plan/trips/oct-snowline']}>
+      <MemoryRouter initialEntries={['/apps/celium/plan/trips/plan-matterhorn-journey']}>
         <Routes>
           <Route path="/apps/celium/plan/trips/:tripId" element={<PlanTripDetail />} />
         </Routes>
       </MemoryRouter>
     )
 
-    expect(screen.getByText('October Snowline Scout')).toBeInTheDocument()
-    expect(screen.getByText('Trip ID: oct-snowline')).toBeInTheDocument()
+    expect(await screen.findByText('Matterhorn Mountaineering Journey')).toBeInTheDocument()
+    expect(screen.getByText('Mock 7-Day Forecast')).toBeInTheDocument()
   })
 
   it('renders shop and pagination', () => {
