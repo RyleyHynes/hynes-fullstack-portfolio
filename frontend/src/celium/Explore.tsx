@@ -7,7 +7,8 @@ import {
 import Button from '@/components/buttons/Button'
 import Card from '@/components/cards/Card'
 import EmptyState from '@/components/data-display/EmptyState'
-import FilterChips from '@/components/data-display/FilterChips'
+import DualRangeSlider from '@/components/form/DualRangeSlider'
+import Dropdown from '@/components/form/Dropdown'
 import PageToolbar from '@/components/layout/PageToolbar'
 import PhotoCarousel from '@/components/media/PhotoCarousel'
 import RouteCard from '@/components/cards/RouteCard'
@@ -24,10 +25,14 @@ import useRoutePermissions from '@/celium/hooks/useRoutePermissions'
 import useRoutesData from '@/celium/hooks/useRoutesData'
 import { getRoutePhotos } from '@/utils/routePhotos'
 
-const filters = ['Distance', 'Elevation', 'Difficulty', 'Landscape', 'Region']
+const LENGTH_CAP_MILES = 50
+const ELEVATION_CAP_FEET = 6000
 
 const Explore = () => {
   const [activeTab, setActiveTab] = useState<'all' | 'todo' | 'completed'>('all')
+  const [difficultyFilter, setDifficultyFilter] = useState<'All' | 'Easy' | 'Moderate' | 'Hard' | 'Expert'>('All')
+  const [distanceRange, setDistanceRange] = useState({ max: LENGTH_CAP_MILES, min: 0 })
+  const [elevationRange, setElevationRange] = useState({ max: ELEVATION_CAP_FEET, min: 0 })
   const [searchQuery, setSearchQuery] = useState('')
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const routeRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -82,12 +87,11 @@ const Explore = () => {
 
   const filteredRoutes = useMemo(() => {
     const needle = searchQuery.trim().toLowerCase()
-    if (!needle) return routes
     return routes.filter((route) => {
       const activity = route.activityType.toLowerCase()
       const style = route.climbingStyle?.toLowerCase() ?? ''
       const grade = route.climbingGrade?.toLowerCase() ?? ''
-      return (
+      const matchesText = (
         route.name.toLowerCase().includes(needle)
         || route.summary.toLowerCase().includes(needle)
         || (route.description ?? '').toLowerCase().includes(needle)
@@ -95,8 +99,15 @@ const Explore = () => {
         || style.includes(needle)
         || grade.includes(needle)
       )
+      const maxDistanceBound = distanceRange.max >= LENGTH_CAP_MILES ? Number.POSITIVE_INFINITY : distanceRange.max
+      const maxElevationBound = elevationRange.max >= ELEVATION_CAP_FEET ? Number.POSITIVE_INFINITY : elevationRange.max
+      const matchesDistance = route.distanceMiles >= distanceRange.min && route.distanceMiles <= maxDistanceBound
+      const matchesElevation = route.elevationGainFt >= elevationRange.min && route.elevationGainFt <= maxElevationBound
+      const matchesDifficulty = difficultyFilter === 'All' || route.difficulty === difficultyFilter
+
+      return matchesText && matchesDistance && matchesElevation && matchesDifficulty
     })
-  }, [routes, searchQuery])
+  }, [difficultyFilter, distanceRange.max, distanceRange.min, elevationRange.max, elevationRange.min, routes, searchQuery])
 
   const visibleRoutes = useMemo(() => {
     if (activeTab === 'todo') return filteredRoutes.filter((route) => route.progress === 'Todo')
@@ -203,6 +214,7 @@ const Explore = () => {
       />
 
       <PageToolbar
+        className="relative z-[1300] overflow-visible"
         actions={(
           canManage ? (
             <Button onClick={handleCreateClick} type="button" variant="primary">
@@ -214,9 +226,68 @@ const Explore = () => {
             </span>
           )
         )}
-        filters={<FilterChips items={filters} />}
+        filters={(
+          <>
+            <Dropdown label="Length">
+              <div className="grid gap-3 text-sm">
+                <p className="font-medium">Miles</p>
+                <DualRangeSlider
+                  max={LENGTH_CAP_MILES}
+                  min={0}
+                  onChange={setDistanceRange}
+                  step={0.1}
+                  value={distanceRange}
+                />
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span>0 mi</span>
+                  <span>50+ mi</span>
+                </div>
+              </div>
+            </Dropdown>
+            <Dropdown label="Elevation">
+              <div className="grid gap-3 text-sm">
+                <p className="font-medium">Elevation gain (ft)</p>
+                <DualRangeSlider
+                  max={ELEVATION_CAP_FEET}
+                  min={0}
+                  onChange={setElevationRange}
+                  step={50}
+                  value={elevationRange}
+                />
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span>0 ft</span>
+                  <span>6000+ ft</span>
+                </div>
+              </div>
+            </Dropdown>
+            <Dropdown label="Difficulty">
+              <div className="grid gap-2 text-sm">
+                {(['All', 'Easy', 'Moderate', 'Hard', 'Expert'] as const).map((option) => (
+                  <Button
+                    className={difficultyFilter === option ? 'border-emerald-400 text-emerald-700' : ''}
+                    key={option}
+                    onClick={() => setDifficultyFilter(option)}
+                    type="button"
+                    variant="text"
+                  >
+                    {option}
+                  </Button>
+                ))}
+              </div>
+            </Dropdown>
+            <Button
+              className="border-amber-300 bg-amber-50 text-amber-700 cursor-not-allowed hover:text-amber-700"
+              disabled
+              type="button"
+              variant="text"
+            >
+              All Filters (Tap coming soon)
+            </Button>
+          </>
+        )}
         search={(
           <SearchBar
+            className="w-full lg:min-w-[36rem]"
             label="Search routes"
             onChange={setSearchQuery}
             placeholder="Search by route, description, or activity"
@@ -262,7 +333,7 @@ const Explore = () => {
             />
           ))}
         </div>
-        <Card className="p-6 flex flex-col justify-between lg:sticky lg:top-24">
+        <Card className="relative z-0 p-6 flex flex-col justify-between lg:sticky lg:top-24">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Map</p>
             <h3 className="mt-2 text-lg font-semibold">Route coverage with live overlays.</h3>

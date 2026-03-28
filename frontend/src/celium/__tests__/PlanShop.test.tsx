@@ -5,8 +5,39 @@ import PlanTripDetail from '@/celium/PlanTripDetail'
 import Shop from '@/celium/Shop'
 import ShopProductDetail from '@/celium/ShopProductDetail'
 
+vi.mock('@/features/api/celiumRoutes', () => ({
+  listRoutes: vi.fn(() => Promise.resolve([
+    {
+      id: 'todo-1',
+      name: 'Skyline Ridge Traverse',
+      summary: 'Plan-ready route',
+      description: null,
+      activityType: 'Hiking',
+      climbingStyle: null,
+      climbingGrade: null,
+      difficulty: 'Moderate',
+      distanceMiles: 8,
+      elevationGainFt: 2400,
+      elevationLossFt: null,
+      maxElevationFt: null,
+      minElevationFt: null,
+      estimatedTimeMinutes: null,
+      loopType: 'OutAndBack',
+      routeGeometry: '',
+      startLatitude: 46.7,
+      startLongitude: -121.7,
+      endLatitude: 46.8,
+      endLongitude: -121.8,
+      landscapeTypeId: 'land',
+      regionId: 'region',
+      status: 'Published',
+      progress: 'Todo',
+    },
+  ])),
+}))
+
 describe('Plan and Shop pages', () => {
-  it('renders plan overview', () => {
+  it('renders plan overview', async () => {
     render(
       <MemoryRouter>
         <Plan />
@@ -15,6 +46,7 @@ describe('Plan and Shop pages', () => {
 
     expect(screen.getByText('Build a trip that stacks the odds in your favor.')).toBeInTheDocument()
     expect(screen.getByText('Start a new trip.')).toBeInTheDocument()
+    expect(await screen.findByText('Skyline Ridge Traverse')).toBeInTheDocument()
   })
 
   it('renders plan trip detail', () => {

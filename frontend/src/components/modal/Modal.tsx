@@ -45,7 +45,7 @@ const Modal = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
       <div className={`relative w-full ${sizeMap[size]} max-h-[80vh] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 shadow-xl flex flex-col ${panelClassName}`.trim()}>
         <ModalHeader
@@ -69,4 +69,3 @@ const Modal = ({
 }
 
 export default Modal
-
