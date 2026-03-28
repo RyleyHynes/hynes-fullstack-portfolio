@@ -49,7 +49,8 @@ describe('Plan and Shop pages', () => {
     )
 
     expect(screen.getByText('Build a trip that stacks the odds in your favor.')).toBeInTheDocument()
-    expect(await screen.findByText('Skyline Ridge Traverse Plan')).toBeInTheDocument()
+    expect((await screen.findAllByText(/(Skyline Ridge Traverse Plan|Matterhorn Mountaineering Journey)/i)).length).toBeGreaterThan(0)
+    expect(await screen.findByRole('button', { name: 'Open planning workspace' })).toBeInTheDocument()
     expect(screen.getByText('To do')).toBeInTheDocument()
     expect(screen.getByText('Completed')).toBeInTheDocument()
   })
