@@ -37,6 +37,10 @@ vi.mock('@/features/api/celiumRoutes', () => ({
 }))
 
 describe('Plan and Shop pages', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
   it('renders plan overview', async () => {
     render(
       <MemoryRouter>
@@ -45,7 +49,7 @@ describe('Plan and Shop pages', () => {
     )
 
     expect(screen.getByText('Build a trip that stacks the odds in your favor.')).toBeInTheDocument()
-    expect((await screen.findAllByText('Matterhorn Mountaineering Journey')).length).toBeGreaterThan(0)
+    expect(await screen.findByText('Skyline Ridge Traverse Plan')).toBeInTheDocument()
     expect(screen.getByText('To do')).toBeInTheDocument()
     expect(screen.getByText('Completed')).toBeInTheDocument()
   })
@@ -60,7 +64,7 @@ describe('Plan and Shop pages', () => {
     )
 
     expect(await screen.findByText('Matterhorn Mountaineering Journey')).toBeInTheDocument()
-    expect(screen.getByText('Mock 7-Day Forecast')).toBeInTheDocument()
+    expect(screen.getByText('Add a route activity to see its mock 7-day forecast.')).toBeInTheDocument()
   })
 
   it('renders shop and pagination', () => {
