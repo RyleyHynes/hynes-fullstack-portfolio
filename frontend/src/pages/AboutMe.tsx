@@ -6,6 +6,7 @@ import { MapPin, Plane } from 'lucide-react'
 /**
  * Internal Imports
  */
+import Button from '@/components/buttons/Button'
 import { profile } from '@/data/profile'
 import {
   lookingGlassPhotos,
@@ -70,7 +71,7 @@ const mountains: MountainTrip[] = [
 /**
  * About-me page combining a location card with interactive summit photo carousels.
  */
-export default function AboutMe() {
+const AboutMe = () => {
   const [photoIndex, setPhotoIndex] = useState<Record<string, number>>({})
   const [modal, setModal] = useState<{ name: string; index: number } | null>(null)
   const activeMountain = modal ? mountains.find((m) => m.name === modal.name) : null
@@ -170,10 +171,12 @@ export default function AboutMe() {
             return (
               <article key={mountain.name} className="card overflow-hidden">
                 <div className="relative group">
-                  <button
-                    className="block w-full"
-                    onClick={() => setModal({ name: mountain.name, index: idx })}
+                  <Button
                     aria-label={`Expand ${mountain.name} photo ${idx + 1}`}
+                    className="block w-full"
+                    type="button"
+                    variant="unstyled"
+                    onClick={() => setModal({ name: mountain.name, index: idx })}
                   >
                     <img
                       src={photo}
@@ -181,23 +184,27 @@ export default function AboutMe() {
                       className="h-56 w-full object-cover"
                       loading="lazy"
                     />
-                  </button>
+                  </Button>
                   {total > 1 && (
                     <>
-                      <button
-                        className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 text-white grid place-items-center opacity-80 hover:opacity-100 transition"
-                        onClick={() => shiftPhoto(mountain.name, total, -1)}
+                      <Button
                         aria-label={`Previous ${mountain.name} photo`}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 text-white grid place-items-center opacity-80 hover:opacity-100 transition"
+                        type="button"
+                        variant="unstyled"
+                        onClick={() => shiftPhoto(mountain.name, total, -1)}
                       >
                         <span className="text-lg">‹</span>
-                      </button>
-                      <button
-                        className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 text-white grid place-items-center opacity-80 hover:opacity-100 transition"
-                        onClick={() => shiftPhoto(mountain.name, total, 1)}
+                      </Button>
+                      <Button
                         aria-label={`Next ${mountain.name} photo`}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 text-white grid place-items-center opacity-80 hover:opacity-100 transition"
+                        type="button"
+                        variant="unstyled"
+                        onClick={() => shiftPhoto(mountain.name, total, 1)}
                       >
                         <span className="text-lg">›</span>
-                      </button>
+                      </Button>
                     </>
                   )}
                   <span className="absolute bottom-3 right-3 text-xs font-semibold bg-black/60 text-white px-2 py-0.5 rounded-full">
@@ -226,13 +233,15 @@ export default function AboutMe() {
           aria-label={`${activeMountain.name} photo viewer`}
         >
           <div className="relative max-w-5xl w-full max-h-[90vh] bg-slate-900/70 rounded-3xl p-4" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="absolute top-4 right-4 text-white/80 hover:text-white text-2xl"
-              onClick={() => setModal(null)}
+            <Button
               aria-label="Close photo viewer"
+              className="absolute top-4 right-4 text-white/80 hover:text-white text-2xl"
+              type="button"
+              variant="unstyled"
+              onClick={() => setModal(null)}
             >
               ×
-            </button>
+            </Button>
             <div className="relative flex items-center justify-center">
               <img
                 src={activeMountain.photos[modal.index]}
@@ -241,20 +250,24 @@ export default function AboutMe() {
               />
               {activeMountain.photos.length > 1 && (
                 <>
-                  <button
-                    className="absolute left-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 text-white text-2xl"
-                    onClick={() => handleModalShift(-1)}
+                  <Button
                     aria-label="Previous photo"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 text-white text-2xl"
+                    type="button"
+                    variant="unstyled"
+                    onClick={() => handleModalShift(-1)}
                   >
                     ‹
-                  </button>
-                  <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 text-white text-2xl"
-                    onClick={() => handleModalShift(1)}
+                  </Button>
+                  <Button
                     aria-label="Next photo"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-black/60 text-white text-2xl"
+                    type="button"
+                    variant="unstyled"
+                    onClick={() => handleModalShift(1)}
                   >
                     ›
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
@@ -271,3 +284,5 @@ export default function AboutMe() {
     </section>
   )
 }
+
+export default AboutMe

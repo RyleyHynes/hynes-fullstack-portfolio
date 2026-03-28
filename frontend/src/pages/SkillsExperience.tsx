@@ -12,7 +12,7 @@ function Pill({ children }: { children: React.ReactNode }) {
 /**
  * Skills page outlining tooling, practices, and experience highlights.
  */
-export default function SkillsExperience() {
+const SkillsExperience = () => {
   const categories = [
     {
       title: 'Frontend Engineering',
@@ -169,3 +169,5 @@ function SectionGroup({ label, items, plain }: { label: string; items: string[];
     </div>
   )
 }
+
+export default SkillsExperience

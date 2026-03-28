@@ -5,7 +5,7 @@ import Badge from '@/components/data-display/Badge'
 /**
  * Project gallery showcasing full-stack sample apps.
  */
-export default function Projects() {
+const Projects = () => {
   return (
     <section className="grid gap-6">
       <header>
@@ -66,3 +66,5 @@ export default function Projects() {
     </section>
   )
 }
+
+export default Projects

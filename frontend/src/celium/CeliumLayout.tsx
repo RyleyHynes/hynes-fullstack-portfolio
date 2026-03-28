@@ -11,7 +11,7 @@ const navItems = [
   { label: 'Shop', to: '/apps/celium/shop' },
 ]
 
-export default function CeliumLayout() {
+const CeliumLayout = () => {
   const [enabled, setEnabled] = useState(document.documentElement.classList.contains('dark'))
   const { isAuthenticated, user, login, logout } = useAuth()
 
@@ -90,3 +90,5 @@ export default function CeliumLayout() {
     </div>
   )
 }
+
+export default CeliumLayout

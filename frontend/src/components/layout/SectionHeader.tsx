@@ -8,7 +8,7 @@ type SectionHeaderProps = {
   className?: string
 }
 
-export default function SectionHeader({ eyebrow, title, subtitle, meta, className = '' }: SectionHeaderProps) {
+const SectionHeader = ({ eyebrow, title, subtitle, meta, className = '' }: SectionHeaderProps) => {
   return (
     <header className={`grid gap-2 ${className}`.trim()}>
       {eyebrow ? <p className="text-xs uppercase tracking-[0.25em] text-emerald-600">{eyebrow}</p> : null}
@@ -18,3 +18,5 @@ export default function SectionHeader({ eyebrow, title, subtitle, meta, classNam
     </header>
   )
 }
+
+export default SectionHeader

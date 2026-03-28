@@ -21,7 +21,7 @@ import {
 
 const filters = ['Distance', 'Elevation', 'Difficulty']
 
-export default function ComponentGallery() {
+const ComponentGallery = () => {
   return (
     <section className="grid gap-8">
       <SectionHeader
@@ -126,3 +126,5 @@ export default function ComponentGallery() {
     </section>
   )
 }
+
+export default ComponentGallery

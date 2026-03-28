@@ -11,7 +11,7 @@ const products = [
   { id: 'camp-system', name: 'Camp System Lite', price: '$199', detail: 'Shelter + sleep kit' },
 ]
 
-export default function Shop() {
+const Shop = () => {
   const [page, setPage] = useState(1)
   return (
     <section className="grid gap-6">
@@ -48,3 +48,5 @@ export default function Shop() {
     </section>
   )
 }
+
+export default Shop

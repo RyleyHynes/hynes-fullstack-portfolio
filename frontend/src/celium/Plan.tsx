@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import Button from '@/components/buttons/Button'
 import Badge from '@/components/data-display/Badge'
 import CardHeader from '@/components/layout/CardHeader'
 import EmptyState from '@/components/data-display/EmptyState'
@@ -9,7 +10,7 @@ const trips = [
   { id: 'fall-gear-test', name: 'Fall Gear Test', dates: 'Nov 3–4', routes: 1 },
 ]
 
-export default function Plan() {
+const Plan = () => {
   return (
     <section className="grid gap-6">
       <SectionHeader
@@ -41,9 +42,11 @@ export default function Plan() {
           className="border-dashed border-slate-300 dark:border-slate-700"
           title="Start a new trip."
           description="Create a trip from a saved route or itinerary template."
-          action={<button className="btn-ghost">Create Trip</button>}
+          action={<Button>Create Trip</Button>}
         />
       </div>
     </section>
   )
 }
+
+export default Plan

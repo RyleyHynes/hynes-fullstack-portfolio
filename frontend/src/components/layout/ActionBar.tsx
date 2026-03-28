@@ -5,10 +5,12 @@ type ActionBarProps = {
   className?: string
 }
 
-export default function ActionBar({ children, className = '' }: ActionBarProps) {
+const ActionBar = ({ children, className = '' }: ActionBarProps) => {
   return (
     <div className={`flex flex-wrap gap-3 ${className}`.trim()}>
       {children}
     </div>
   )
 }
+
+export default ActionBar

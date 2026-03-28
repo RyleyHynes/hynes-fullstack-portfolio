@@ -7,7 +7,7 @@ type FilterChipsProps = {
   renderSuffix?: (value: string) => ReactNode
 }
 
-export default function FilterChips({ items, onClick, renderSuffix }: FilterChipsProps) {
+const FilterChips = ({ items, onClick, renderSuffix }: FilterChipsProps) => {
   return (
     <>
       {items.map(item => (
@@ -25,3 +25,5 @@ export default function FilterChips({ items, onClick, renderSuffix }: FilterChip
     </>
   )
 }
+
+export default FilterChips

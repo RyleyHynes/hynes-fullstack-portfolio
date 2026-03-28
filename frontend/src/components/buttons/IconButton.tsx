@@ -9,7 +9,7 @@ type IconButtonProps =
   | (IconButtonBaseProps & ButtonHTMLAttributes<HTMLButtonElement> & { href?: undefined })
   | (IconButtonBaseProps & AnchorHTMLAttributes<HTMLAnchorElement> & { href: string })
 
-export default function IconButton({ icon, ariaLabel, href, className = '', ...props }: IconButtonProps) {
+const IconButton = ({ icon, ariaLabel, href, className = '', ...props }: IconButtonProps) => {
   const classes = `btn-ghost inline-flex items-center justify-center px-2 py-2 ${className}`.trim()
 
   if (href) {
@@ -26,3 +26,5 @@ export default function IconButton({ icon, ariaLabel, href, className = '', ...p
     </button>
   )
 }
+
+export default IconButton

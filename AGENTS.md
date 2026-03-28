@@ -18,6 +18,13 @@ These instructions apply to Codex edits in this repository.
 - Callback props are function/event props such as: `onClick`, `onChange`, `onSubmit`, `onClose`, `onSelect`, and similar `on*` props.
 - Within the callback group, keep callback props alphabetized.
 
+## ES6 Component Style
+
+- Follow ES6+ syntax conventions for frontend code.
+- Prefer arrow function components over function declarations for default-exported React components.
+- Define the component first, then place `export default <ComponentName>` at the bottom of the file.
+- Do not use inline default-export function declarations like `export default function Component() { ... }` unless explicitly requested.
+
 ## Example Ordering
 
 ```tsx

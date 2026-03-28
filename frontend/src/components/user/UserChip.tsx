@@ -6,7 +6,7 @@ type UserChipProps = {
   role?: ReactNode
 }
 
-export default function UserChip({ name, role }: UserChipProps) {
+const UserChip = ({ name, role }: UserChipProps) => {
   const initials = name.split(' ').map(part => part[0]).join('').slice(0, 2)
 
   return (
@@ -19,3 +19,5 @@ export default function UserChip({ name, role }: UserChipProps) {
     </div>
   )
 }
+
+export default UserChip

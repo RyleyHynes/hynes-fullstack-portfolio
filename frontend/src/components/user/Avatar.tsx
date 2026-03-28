@@ -6,7 +6,7 @@ type AvatarProps = {
   className?: string
 }
 
-export default function Avatar({ initials, label, className = '' }: AvatarProps) {
+const Avatar = ({ initials, label, className = '' }: AvatarProps) => {
   return (
     <div className={`flex items-center gap-2 ${className}`.trim()}>
       <div className="h-9 w-9 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-200 grid place-items-center text-xs font-semibold">
@@ -16,3 +16,5 @@ export default function Avatar({ initials, label, className = '' }: AvatarProps)
     </div>
   )
 }
+
+export default Avatar

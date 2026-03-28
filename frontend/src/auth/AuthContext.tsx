@@ -18,6 +18,9 @@ export type AuthContextValue = {
   hasPermission: (permission: string) => boolean
 }
 
+// Backward-compatible alias for existing imports.
+export type AuthContextType = AuthContextValue
+
 export const AuthContext = createContext<AuthContextValue | null>(null)
 
 export const useAuth = () => {

@@ -8,7 +8,7 @@ type PageToolbarProps = {
   className?: string
 }
 
-export default function PageToolbar({ search, filters, actions, className = '' }: PageToolbarProps) {
+const PageToolbar = ({ search, filters, actions, className = '' }: PageToolbarProps) => {
   return (
     <Card className={`p-5 ${className}`.trim()}>
       <div className="flex flex-col lg:flex-row gap-4">
@@ -19,3 +19,5 @@ export default function PageToolbar({ search, filters, actions, className = '' }
     </Card>
   )
 }
+
+export default PageToolbar

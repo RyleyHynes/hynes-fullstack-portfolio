@@ -83,7 +83,7 @@ const buildSchemaRows = (schema: ApiSchema | undefined, spec?: ApiSpec) => {
   }))
 }
 
-export default function ApiDocs() {
+const ApiDocs = () => {
   const [spec, setSpec] = useState<ApiSpec | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -256,3 +256,5 @@ export default function ApiDocs() {
     </section>
   )
 }
+
+export default ApiDocs

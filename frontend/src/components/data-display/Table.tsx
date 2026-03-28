@@ -17,7 +17,7 @@ type TableProps = {
   className?: string
 }
 
-export default function Table({ columns, rows, className = '' }: TableProps) {
+const Table = ({ columns, rows, className = '' }: TableProps) => {
   return (
     <div className={`overflow-hidden rounded-xl border border-slate-200/70 dark:border-slate-800 ${className}`.trim()}>
       <div className="grid gap-2 bg-slate-100/70 dark:bg-slate-900/60 px-3 py-2 text-[11px] uppercase tracking-wider text-slate-500">
@@ -45,3 +45,5 @@ export default function Table({ columns, rows, className = '' }: TableProps) {
     </div>
   )
 }
+
+export default Table
