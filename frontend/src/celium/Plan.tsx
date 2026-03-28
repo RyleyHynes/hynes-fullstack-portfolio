@@ -1,110 +1,98 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AuthContext } from '@/auth/AuthContext'
 import Button from '@/components/buttons/Button'
-import Badge from '@/components/data-display/Badge'
-import CardHeader from '@/components/layout/CardHeader'
-import EmptyState from '@/components/data-display/EmptyState'
 import SectionHeader from '@/components/layout/SectionHeader'
-import { listRoutes, type RouteModel } from '@/features/api/celiumRoutes'
-
-const trips = [
-  { id: 'oct-snowline', name: 'October Snowline Scout', dates: 'Oct 12–15', routes: 2 },
-  { id: 'fall-gear-test', name: 'Fall Gear Test', dates: 'Nov 3–4', routes: 1 },
-]
+import { AuthContext } from '@/auth/AuthContext'
+import {
+  PlanListPane,
+  PlanStatusBadge,
+} from '@/celium/components/plan'
+import usePlanWorkspace from '@/celium/hooks/usePlanWorkspace'
 
 const Plan = () => {
+  const [planFilter, setPlanFilter] = useState<'todo' | 'completed'>('todo')
   const auth = useContext(AuthContext)
-  const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)
-  const [todoRoutes, setTodoRoutes] = useState<RouteModel[]>([])
+  const {
+    isLoading,
+    planSummaries,
+    routePlanningTargets,
+    selectedPlan,
+    selectedPlanId,
+    setSelectedPlan,
+  } = usePlanWorkspace({ getAccessToken: auth?.getAccessToken ?? (async () => null) })
+
+  const todoPlanIds = useMemo(
+    () => new Set(Object.values(routePlanningTargets)),
+    [routePlanningTargets]
+  )
+
+  const visiblePlanSummaries = useMemo(() => {
+    if (planFilter === 'completed') {
+      return planSummaries.filter((summary) => summary.status === 'Completed')
+    }
+    return planSummaries.filter((summary) => todoPlanIds.has(summary.id))
+  }, [planFilter, planSummaries, todoPlanIds])
 
   useEffect(() => {
-    let active = true
-
-    const loadTodoRoutes = async () => {
-      try {
-        const accessToken = await auth?.getAccessToken?.()
-        const routes = await listRoutes(accessToken ?? undefined)
-        if (!active) return
-        setTodoRoutes(routes.filter((route) => route.progress === 'Todo'))
-      } catch {
-        if (!active) return
-        setTodoRoutes([])
-      } finally {
-        if (active) {
-          setIsLoadingRoutes(false)
-        }
-      }
-    }
-
-    void loadTodoRoutes()
-
-    return () => {
-      active = false
-    }
-  }, [auth])
+    if (visiblePlanSummaries.some((summary) => summary.id === selectedPlanId)) return
+    if (!visiblePlanSummaries[0]) return
+    setSelectedPlan(visiblePlanSummaries[0].id)
+  }, [selectedPlanId, setSelectedPlan, visiblePlanSummaries])
 
   return (
     <section className="grid gap-6">
       <SectionHeader
         eyebrow="Plan"
         title="Build a trip that stacks the odds in your favor."
-        subtitle="Organize routes, dates, participants, and packing in one place. Celium connects route context to the plan."
+        subtitle="A timeline of intent, preparation, and uncertainty. Move from idea to commitment."
       />
 
-      <div className="flex items-center gap-4 text-sm text-slate-500">
-        <span className="font-semibold text-emerald-600">Trips</span>
-        <span>Packing</span>
-        <span>Notes</span>
-      </div>
-
-      <div className="card p-5 grid gap-4">
-        <CardHeader
-          title="Routes ready to plan"
-          subtitle="Any Explore route marked Todo appears here automatically."
-          action={<Badge>{todoRoutes.length}</Badge>}
+      <div className="grid lg:grid-cols-[minmax(240px,1.1fr)_minmax(0,2fr)] gap-6 items-start">
+        <PlanListPane
+          planFilter={planFilter}
+          plans={visiblePlanSummaries}
+          selectedPlanId={selectedPlanId}
+          setPlanFilter={setPlanFilter}
+          onSelectPlan={setSelectedPlan}
         />
-        {isLoadingRoutes ? (
-          <p className="text-sm text-slate-500">Loading todo routes...</p>
-        ) : null}
-        {!isLoadingRoutes && todoRoutes.length === 0 ? (
-          <p className="text-sm text-slate-500">No Todo routes yet. Mark a route as Todo in Explore to plan it here.</p>
-        ) : null}
-        {!isLoadingRoutes ? (
-          <div className="grid md:grid-cols-2 gap-3">
-            {todoRoutes.map((route) => (
-              <Link
-                key={route.id}
-                to={`/apps/celium/explore/routes/${route.id}`}
-                className="rounded-xl border border-slate-200/70 dark:border-slate-800 px-4 py-3 hover:border-emerald-300 transition-colors"
-              >
-                <p className="font-semibold text-slate-900 dark:text-slate-100">{route.name}</p>
-                <p className="text-xs text-slate-500 mt-1">{route.distanceMiles} mi · {route.elevationGainFt} ft · {route.difficulty}</p>
-              </Link>
-            ))}
-          </div>
-        ) : null}
-      </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {trips.map(trip => (
-          <Link key={trip.id} to={`/apps/celium/plan/trips/${trip.id}`} className="card p-5 hover:border-emerald-200">
-            <CardHeader
-              title={trip.name}
-              subtitle={trip.dates}
-              action={<Badge>{trip.routes} routes</Badge>}
-            />
-            <p className="mt-3 text-sm text-slate-500">
-              Draft itinerary with shared gear checklist and weather notes.
-            </p>
-          </Link>
-        ))}
-        <EmptyState
-          className="border-dashed border-slate-300 dark:border-slate-700"
-          title="Start a new trip."
-          description="Create a trip from a saved route or itinerary template."
-          action={<Button>Create Trip</Button>}
-        />
+        <div className="grid gap-5">
+          <section className="card p-5 grid gap-4">
+            {isLoading ? (
+              <p className="text-sm text-slate-500">Loading plans...</p>
+            ) : null}
+            {!isLoading && !selectedPlan ? (
+              <p className="text-sm text-slate-500">No plan selected yet.</p>
+            ) : null}
+            {selectedPlan ? (
+              <>
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Selected Plan</p>
+                    <h2 className="text-2xl font-semibold mt-1">{selectedPlan.name}</h2>
+                  </div>
+                  <PlanStatusBadge status={selectedPlan.status} />
+                </div>
+                <div className="grid gap-2">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Timeline Preview</p>
+                  {selectedPlan.days
+                    .slice()
+                    .sort((left, right) => left.order - right.order)
+                    .map((day) => (
+                      <div key={day.id} className="rounded-xl border border-slate-200/70 dark:border-slate-800 px-3 py-2">
+                        <p className="text-sm font-medium">{day.title}</p>
+                        <p className="text-xs text-slate-500">{day.activities.length} activities</p>
+                      </div>
+                    ))}
+                </div>
+                <Link to={`/apps/celium/plan/trips/${selectedPlan.id}`}>
+                  <Button type="button" variant="primary">Open planning workspace</Button>
+                </Link>
+              </>
+            ) : null}
+          </section>
+        </div>
+
       </div>
     </section>
   )

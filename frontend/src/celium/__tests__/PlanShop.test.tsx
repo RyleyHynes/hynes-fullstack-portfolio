@@ -37,6 +37,10 @@ vi.mock('@/features/api/celiumRoutes', () => ({
 }))
 
 describe('Plan and Shop pages', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
   it('renders plan overview', async () => {
     render(
       <MemoryRouter>
@@ -45,21 +49,23 @@ describe('Plan and Shop pages', () => {
     )
 
     expect(screen.getByText('Build a trip that stacks the odds in your favor.')).toBeInTheDocument()
-    expect(screen.getByText('Start a new trip.')).toBeInTheDocument()
-    expect(await screen.findByText('Skyline Ridge Traverse')).toBeInTheDocument()
+    expect((await screen.findAllByText(/(Skyline Ridge Traverse Plan|Matterhorn Mountaineering Journey)/i)).length).toBeGreaterThan(0)
+    expect(await screen.findByRole('button', { name: 'Open planning workspace' })).toBeInTheDocument()
+    expect(screen.getByText('To do')).toBeInTheDocument()
+    expect(screen.getByText('Completed')).toBeInTheDocument()
   })
 
-  it('renders plan trip detail', () => {
+  it('renders plan trip detail', async () => {
     render(
-      <MemoryRouter initialEntries={['/apps/celium/plan/trips/oct-snowline']}>
+      <MemoryRouter initialEntries={['/apps/celium/plan/trips/plan-matterhorn-journey']}>
         <Routes>
           <Route path="/apps/celium/plan/trips/:tripId" element={<PlanTripDetail />} />
         </Routes>
       </MemoryRouter>
     )
 
-    expect(screen.getByText('October Snowline Scout')).toBeInTheDocument()
-    expect(screen.getByText('Trip ID: oct-snowline')).toBeInTheDocument()
+    expect(await screen.findByText('Matterhorn Mountaineering Journey')).toBeInTheDocument()
+    expect(screen.getByText('Add a route activity to see its mock 7-day forecast.')).toBeInTheDocument()
   })
 
   it('renders shop and pagination', () => {
