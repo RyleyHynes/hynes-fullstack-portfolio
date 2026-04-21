@@ -45,31 +45,28 @@ const buildMockForecast = (seedKey: string): ForecastDay[] => {
 }
 
 const getConditionIcon = (condition: ForecastCondition) => {
-  if (condition === 'Clear') return <Sun className="h-4 w-4 text-amber-500" />
-  if (condition === 'Cloudy') return <Cloud className="h-4 w-4 text-slate-500" />
-  if (condition === 'Rain') return <CloudRain className="h-4 w-4 text-sky-600" />
-  return <CloudSnow className="h-4 w-4 text-indigo-500" />
+  if (condition === 'Clear') return <Sun className="h-3.5 w-3.5 text-amber-500" />
+  if (condition === 'Cloudy') return <Cloud className="h-3.5 w-3.5 text-slate-500" />
+  if (condition === 'Rain') return <CloudRain className="h-3.5 w-3.5 text-sky-600" />
+  return <CloudSnow className="h-3.5 w-3.5 text-indigo-500" />
 }
 
 const RouteForecast = ({ routeLabel, seedKey }: RouteForecastProps) => {
   const forecast = useMemo(() => buildMockForecast(seedKey), [seedKey])
 
   return (
-    <section className="rounded-xl border border-slate-200/70 dark:border-slate-800 p-4 grid gap-3">
+    <section className="grid gap-2 rounded-lg bg-white/70 p-2.5 shadow-soft dark:bg-white/5">
       <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Mock 7-Day Forecast</p>
-        <p className="text-sm font-medium mt-1">{routeLabel}</p>
+        <p className="text-[11px] uppercase tracking-[0.16em] text-slate-400">7-day forecast</p>
+        <p className="mt-0.5 truncate text-xs text-slate-500">{routeLabel}</p>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-1.5">
         {forecast.map((day) => (
-          <div key={day.dayLabel} className="rounded-lg border border-slate-200/70 dark:border-slate-800 bg-white/60 dark:bg-slate-900/40 p-2">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-medium">{day.dayLabel}</p>
-              {getConditionIcon(day.condition)}
-            </div>
-            <p className="text-xs text-slate-500 mt-2">{day.condition}</p>
-            <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-              H {day.highF}F / L {day.lowF}F
+          <div key={day.dayLabel} className="grid min-w-16 justify-items-center gap-1 rounded-md bg-slate-50 px-1.5 py-1.5 dark:bg-slate-950/60">
+            <p className="text-[10px] font-semibold leading-none">{day.dayLabel.slice(0, 3)}</p>
+            {getConditionIcon(day.condition)}
+            <p className="text-[10px] leading-none text-slate-600 dark:text-slate-300">
+              {day.highF}/{day.lowF}
             </p>
           </div>
         ))}

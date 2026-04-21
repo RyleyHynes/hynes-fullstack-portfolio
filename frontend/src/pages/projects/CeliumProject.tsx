@@ -10,13 +10,13 @@ const highlights = [
     body: 'A planning module that allows users to select routes, set dates, review weather signals, and organize preparation through curated checklists, maps, and supporting tools—without directing decisions.',
   },
   {
-    title: 'Support — sustaining the platform',
-    body: 'A lightweight support surface that demonstrates commerce workflows and provides a way for users to contribute to ongoing application development and future features.',
+    title: 'Review — route status shared across the workflow',
+    body: 'Explore and Plan use the same route status source, so completed objectives and upcoming objectives stay aligned across the application.',
   },
 ]
 
 const outcomes = [
-  { label: 'Focus', value: 'Backcountry network for route-to-gear decisions' },
+  { label: 'Focus', value: 'Backcountry route discovery and trip planning' },
   { label: 'Primary stack', value: 'React, TypeScript, .NET, PostgreSQL' },
   { label: 'Status', value: 'Active build with CRUD API + app shell' },
 ]
@@ -33,7 +33,8 @@ const CeliumProject = () => {
           Built on connection.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Link to="/apps/celium" className="btn-primary">Launch Celium</Link>
+          <Link className="btn-primary" to="/apps/celium">Launch Celium</Link>
+          <Link className="btn-ghost" to="/apps/celium/api-docs">API Docs</Link>
         </div>
       </header>
 
@@ -66,11 +67,10 @@ const CeliumProject = () => {
         </aside>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 gap-6">
         {[
           { title: 'Explore', copy: 'Find routes and see how others experienced them.', image: `${publicBase}explore.png` },
           { title: 'Plan', copy: 'Turn routes into trip drafts.', image: `${publicBase}plan.png` },
-          { title: 'Support', copy: 'Help sustain ongoing development.', image: `${publicBase}shop.png` },
         ].map(panel => (
           <div key={panel.title} className="card p-5">
             <p className="text-xs uppercase tracking-[0.25em] text-slate-400">{panel.title}</p>

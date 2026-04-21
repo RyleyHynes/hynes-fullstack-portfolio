@@ -3,7 +3,7 @@ import {
   completePlan,
   createPlanFromRoute,
   listPlans,
-  listTodoRoutesForPlanning,
+  listRoutesForPlanning,
   savePlan,
 } from '@/features/api/planApi'
 import type { NoteCategory, PlanModel } from '@/celium/types/plan'
@@ -15,10 +15,22 @@ type UsePlanWorkspaceArgs = {
   planId?: string
 }
 
+const dedupeRouteBackedPlans = (plans: PlanModel[], routeIds: Set<string>) => {
+  const claimedRouteIds = new Set<string>()
+
+  return plans.filter((plan) => {
+    const attachedRouteId = plan.metadata.attachedRouteIds.find((routeId) => routeIds.has(routeId))
+    if (!attachedRouteId) return true
+    if (claimedRouteIds.has(attachedRouteId)) return false
+    claimedRouteIds.add(attachedRouteId)
+    return true
+  })
+}
+
 const usePlanWorkspace = ({ getAccessToken, planId }: UsePlanWorkspaceArgs) => {
   const [isLoading, setIsLoading] = useState(true)
   const [plans, setPlans] = useState<PlanModel[]>([])
-  const [todoRoutes, setTodoRoutes] = useState<Awaited<ReturnType<typeof listTodoRoutesForPlanning>>>([])
+  const [planningRoutes, setPlanningRoutes] = useState<Awaited<ReturnType<typeof listRoutesForPlanning>>>([])
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null)
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null)
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(planId ?? null)
@@ -29,7 +41,7 @@ const usePlanWorkspace = ({ getAccessToken, planId }: UsePlanWorkspaceArgs) => {
     const accessToken = await getAccessToken()
     const [initialPlans, routes] = await Promise.all([
       listPlans(),
-      listTodoRoutesForPlanning(accessToken ?? undefined),
+      listRoutesForPlanning(accessToken ?? undefined),
     ])
 
     let allPlans = [...initialPlans]
@@ -39,9 +51,10 @@ const usePlanWorkspace = ({ getAccessToken, planId }: UsePlanWorkspaceArgs) => {
       const created = await createPlanFromRoute(route)
       allPlans = [created, ...allPlans]
     }
+    allPlans = dedupeRouteBackedPlans(allPlans, new Set(routes.map((route) => route.id)))
 
     setPlans(allPlans)
-    setTodoRoutes(routes)
+    setPlanningRoutes(routes)
     setSelectedPlanId((current) => current ?? allPlans[0]?.id ?? null)
     setIsLoading(false)
   }, [getAccessToken])
@@ -71,14 +84,24 @@ const usePlanWorkspace = ({ getAccessToken, planId }: UsePlanWorkspaceArgs) => {
   )
 
   const routePlanningTargets = useMemo(() => {
-    return todoRoutes.reduce<Record<string, string>>((accumulator, route) => {
+    return planningRoutes.reduce<Record<string, string>>((accumulator, route) => {
       const owningPlan = plans.find((plan) => plan.metadata.attachedRouteIds.includes(route.id))
       if (owningPlan) {
         accumulator[route.id] = owningPlan.id
       }
       return accumulator
     }, {})
-  }, [plans, todoRoutes])
+  }, [planningRoutes, plans])
+
+  const routeProgressByPlanId = useMemo(() => {
+    return plans.reduce<Record<string, 'Todo' | 'Completed'>>((accumulator, plan) => {
+      const attachedRoute = planningRoutes.find((route) => plan.metadata.attachedRouteIds.includes(route.id))
+      if (attachedRoute) {
+        accumulator[plan.id] = attachedRoute.progress
+      }
+      return accumulator
+    }, {})
+  }, [planningRoutes, plans])
 
   const persistPlan = useCallback(async (plan: PlanModel) => {
     const saved = await savePlan(plan)
@@ -114,6 +137,40 @@ const usePlanWorkspace = ({ getAccessToken, planId }: UsePlanWorkspaceArgs) => {
     await persistPlan(next)
   }, [persistPlan, selectedPlan])
 
+  const createChecklistItem = useCallback(async (label: string) => {
+    if (!selectedPlan) return
+    const next = {
+      ...selectedPlan,
+      checklistItems: [
+        ...selectedPlan.checklistItems,
+        {
+          category: 'Checklist' as const,
+          id: `prep-${Date.now()}`,
+          label,
+          status: 'NotStarted' as const,
+        },
+      ],
+    }
+    await persistPlan(next)
+  }, [persistPlan, selectedPlan])
+
+  const updateChecklistItem = useCallback(async (itemId: string, updates: { description?: string, label: string }) => {
+    if (!selectedPlan) return
+    const next = {
+      ...selectedPlan,
+      checklistItems: selectedPlan.checklistItems.map((item) => (
+        item.id === itemId
+          ? {
+            ...item,
+            description: updates.description,
+            label: updates.label,
+          }
+          : item
+      )),
+    }
+    await persistPlan(next)
+  }, [persistPlan, selectedPlan])
+
   const updateNotes = useCallback(async (category: NoteCategory, value: string) => {
     if (!selectedPlan) return
     await persistPlan({
@@ -137,6 +194,7 @@ const usePlanWorkspace = ({ getAccessToken, planId }: UsePlanWorkspaceArgs) => {
 
   return {
     completeSelectedPlan,
+    createChecklistItem,
     handleMoveActivity,
     handleReorderDays,
     isLoading,
@@ -150,7 +208,9 @@ const usePlanWorkspace = ({ getAccessToken, planId }: UsePlanWorkspaceArgs) => {
     setSelectedActivityId,
     setSelectedDayId,
     setSelectedPlan,
-    todoRoutes,
+    planningRoutes,
+    routeProgressByPlanId,
+    updateChecklistItem,
     updateChecklistStatus,
     updateNotes,
   }

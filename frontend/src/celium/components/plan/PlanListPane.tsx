@@ -3,14 +3,24 @@ import Button from '@/components/buttons/Button'
 import PlanCard from '@/celium/components/plan/PlanCard'
 
 type PlanListPaneProps = {
+  completedCount: number
   planFilter: 'todo' | 'completed'
   setPlanFilter: (value: 'todo' | 'completed') => void
   plans: PlanSummary[]
   selectedPlanId: string | null
+  todoCount: number
   onSelectPlan: (planId: string) => void
 }
 
-const PlanListPane = ({ planFilter, plans, selectedPlanId, setPlanFilter, onSelectPlan }: PlanListPaneProps) => {
+const PlanListPane = ({
+  completedCount,
+  planFilter,
+  plans,
+  selectedPlanId,
+  setPlanFilter,
+  todoCount,
+  onSelectPlan,
+}: PlanListPaneProps) => {
   return (
     <aside className="card p-4 grid gap-3 h-fit lg:sticky lg:top-24">
       <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Plans</p>
@@ -21,7 +31,7 @@ const PlanListPane = ({ planFilter, plans, selectedPlanId, setPlanFilter, onSele
           type="button"
           variant="text"
         >
-          To do
+          To do ({todoCount})
         </Button>
         <Button
           className={planFilter === 'completed' ? 'border-emerald-400 text-emerald-700' : ''}
@@ -29,7 +39,7 @@ const PlanListPane = ({ planFilter, plans, selectedPlanId, setPlanFilter, onSele
           type="button"
           variant="text"
         >
-          Completed
+          Completed ({completedCount})
         </Button>
       </div>
       <div className="grid gap-3 max-h-[65vh] overflow-y-auto pr-1">

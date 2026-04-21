@@ -9,9 +9,6 @@ import {
   createBoardRequest,
   moveCardRequest,
   generatePlanRequest,
-  productsRequest,
-  createOrderRequest,
-  payOrderRequest,
 } from '../portfolioApi'
 
 afterEach(() => {
@@ -48,7 +45,7 @@ describe('portfolioApi utilities', () => {
   it('exposes expected endpoints on the API slice', () => {
     expect(portfolioApi.reducerPath).toBe('portfolioApi')
     expect(portfolioApi.endpoints.login).toBeDefined()
-    expect(portfolioApi.endpoints.products).toBeDefined()
+    expect(portfolioApi.endpoints.generatePlan).toBeDefined()
   })
 
   it('builds request payloads for each endpoint', () => {
@@ -58,8 +55,5 @@ describe('portfolioApi utilities', () => {
     expect(createBoardRequest({ title: 'New' })).toMatchObject({ url: 'tracker/boards/', method: 'POST' })
     expect(moveCardRequest({ id: 1, column: 2, position: 3 })).toMatchObject({ url: 'tracker/cards/1/move/' })
     expect(generatePlanRequest({ name: 'Base', start_date: '2024-01-01', weeks: 4 })).toMatchObject({ url: 'training/plans/generate/' })
-    expect(productsRequest()).toBe('shop/products/')
-    expect(createOrderRequest({ items: [{ product_id: 1, quantity: 2 }] })).toMatchObject({ url: 'shop/orders/' })
-    expect(payOrderRequest({ id: 5, token: 'tok' })).toMatchObject({ url: 'shop/orders/5/pay/' })
   })
 })

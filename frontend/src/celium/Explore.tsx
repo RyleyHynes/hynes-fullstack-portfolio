@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   createRoute,
   deleteRoute,
-  updateRoute,
 } from '@/features/api/celiumRoutes'
 import Button from '@/components/buttons/Button'
 import Card from '@/components/cards/Card'
@@ -10,7 +9,6 @@ import EmptyState from '@/components/data-display/EmptyState'
 import DualRangeSlider from '@/components/form/DualRangeSlider'
 import Dropdown from '@/components/form/Dropdown'
 import PageToolbar from '@/components/layout/PageToolbar'
-import PhotoCarousel from '@/components/media/PhotoCarousel'
 import RouteCard from '@/components/cards/RouteCard'
 import RouteMap from '@/components/media/RouteMap'
 import SearchBar from '@/components/form/SearchBar'
@@ -19,7 +17,7 @@ import Tabs from '@/components/data-display/Tabs'
 import { Modal, defaultRouteForm } from '@/components/modal'
 import { useAuth } from '@/auth'
 import RouteFormModal from '@/celium/RouteFormModal'
-import { parseCreateRoutePayload, parseUpdateRoutePayload } from '@/celium/routeFormParser'
+import { parseCreateRoutePayload } from '@/celium/routeFormParser'
 import useRouteForm from '@/celium/hooks/useRouteForm'
 import useRoutePermissions from '@/celium/hooks/useRoutePermissions'
 import useRoutesData from '@/celium/hooks/useRoutesData'
@@ -38,34 +36,22 @@ const Explore = () => {
   const routeRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const { getAccessToken, isAuthenticated, login } = useAuth()
   const { canManage, isLoading: isPermissionsLoading } = useRoutePermissions({ getAccessToken, isAuthenticated })
-  const { error, isLoading, loadRoutes, routes, setError, setRoutes } = useRoutesData({ getAccessToken })
+  const { error, isLoading, loadRoutes, routes, setError } = useRoutesData({ getAccessToken })
   const {
     closeFormModal,
     createForm,
     createPhotos,
     deleteTarget,
-    editForm,
-    editingRoute,
     handleCreateClick,
     hasSubmitted,
     isCreateOpen,
-    openEdit,
-    openView,
     photoIndex,
-    routePhotos,
-    selectedRouteId,
     setCreateForm,
     setCreatePhotos,
     setDeleteTarget,
-    setEditForm,
-    setEditingRoute,
     setHasSubmitted,
     setIsCreateOpen,
     setPhotoIndex,
-    setRoutePhotos,
-    setSelectedRouteId,
-    setViewingRoute,
-    viewingRoute,
   } = useRouteForm()
 
   useEffect(() => {
@@ -153,33 +139,6 @@ const Explore = () => {
       await loadRoutes()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to create route.')
-    }
-  }
-
-  const handleUpdate = async () => {
-    if (!editingRoute) return
-    const parsed = parseUpdateRoutePayload(editForm)
-    if (!parsed.ok) {
-      setError(parsed.error)
-      return
-    }
-
-    setError(null)
-    try {
-      if (!isAuthenticated) {
-        await login({ returnTo: '/apps/celium/explore' })
-        return
-      }
-
-      const accessToken = await getAccessToken()
-      const updatedRoute = await updateRoute(editingRoute.id, parsed.value, accessToken ?? undefined)
-      setRoutes((current) => current.map((route) => (route.id === updatedRoute.id ? updatedRoute : route)))
-      setEditingRoute(null)
-      setIsCreateOpen(false)
-      setViewingRoute(null)
-      setSelectedRouteId(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to update route.')
     }
   }
 
@@ -326,9 +285,6 @@ const Explore = () => {
               coverImage={getRoutePhotos(route.name)[0]}
               href={`/apps/celium/explore/routes/${route.id}`}
               onDelete={canManage ? setDeleteTarget : undefined}
-              onEdit={openEdit}
-              onSelect={(selected) => setSelectedRouteId(selected.id)}
-              onView={openView}
               route={route}
             />
           ))}
@@ -345,7 +301,7 @@ const Explore = () => {
             <RouteMap
               onMarkerClick={scrollToRoute}
               routes={visibleRoutes}
-              selectedRouteId={selectedRouteId}
+              selectedRouteId={null}
               userLocation={userLocation}
             />
           </div>
@@ -353,61 +309,22 @@ const Explore = () => {
       </div>
 
       <RouteFormModal
-        form={editingRoute ? editForm : createForm}
-        isOpen={isCreateOpen || editingRoute !== null}
-        mode={editingRoute ? 'edit' : 'create'}
+        form={createForm}
+        isOpen={isCreateOpen}
+        mode="create"
         onClose={closeFormModal}
         onPhotosChange={(files) => {
-          if (editingRoute) {
-            setRoutePhotos((current) => ({ ...current, [editingRoute.id]: files }))
-          } else {
-            setCreatePhotos(files)
-          }
+          setCreatePhotos(files)
           setPhotoIndex(0)
         }}
-        onReset={editingRoute ? undefined : () => setCreateForm({ ...defaultRouteForm })}
-        onSubmit={editingRoute ? handleUpdate : handleCreate}
+        onReset={() => setCreateForm({ ...defaultRouteForm })}
+        onSubmit={handleCreate}
         photoIndex={photoIndex}
-        photos={editingRoute ? (routePhotos[editingRoute.id] ?? []) : createPhotos}
-        setForm={editingRoute ? setEditForm : setCreateForm}
+        photos={createPhotos}
+        setForm={setCreateForm}
         setPhotoIndex={setPhotoIndex}
-        showValidation={!editingRoute && hasSubmitted}
+        showValidation={hasSubmitted}
       />
-
-      <Modal
-        isOpen={viewingRoute !== null}
-        onClose={() => setViewingRoute(null)}
-        title="View route"
-        footer={<Button onClick={() => setViewingRoute(null)}>Close</Button>}
-      >
-        {viewingRoute ? (
-          <div className="grid gap-4 text-sm text-slate-600 dark:text-slate-300">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Summary</p>
-              <p className="mt-1 text-base text-slate-900 dark:text-slate-100">{viewingRoute.summary}</p>
-            </div>
-            <div className="grid md:grid-cols-2 gap-3">
-              <div>Start: {viewingRoute.startLatitude}, {viewingRoute.startLongitude}</div>
-              <div>End: {viewingRoute.endLatitude}, {viewingRoute.endLongitude}</div>
-              <div>Activity: {viewingRoute.activityType}</div>
-              <div>Loop: {viewingRoute.loopType}</div>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Photos</p>
-              <PhotoCarousel
-                index={photoIndex}
-                onNext={() => {
-                  const count = getRoutePhotos(viewingRoute.name).length
-                  if (count === 0) return
-                  setPhotoIndex((prev) => Math.min(prev + 1, count - 1))
-                }}
-                onPrev={() => setPhotoIndex((prev) => Math.max(prev - 1, 0))}
-                photos={getRoutePhotos(viewingRoute.name)}
-              />
-            </div>
-          </div>
-        ) : null}
-      </Modal>
 
       <Modal
         isOpen={deleteTarget !== null}

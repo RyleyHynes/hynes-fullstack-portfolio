@@ -28,6 +28,7 @@ export type PlanDay = {
 
 export type ChecklistItem = {
   category: 'Checklist' | 'Gear' | 'Logistics' | 'Permits'
+  description?: string
   id: string
   label: string
   status: ChecklistStatus

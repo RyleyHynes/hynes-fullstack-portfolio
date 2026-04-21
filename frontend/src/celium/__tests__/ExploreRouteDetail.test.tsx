@@ -2,6 +2,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import ExploreRouteDetail from '@/celium/ExploreRouteDetail'
 
+const authMocks = vi.hoisted(() => ({
+  getAccessToken: vi.fn(async () => 'test-token'),
+}))
+
 vi.mock('@/auth', async () => {
   const actual = await vi.importActual<typeof import('@/auth')>('@/auth')
   return {
@@ -12,7 +16,7 @@ vi.mock('@/auth', async () => {
       user: { name: 'Test User' },
       login: async () => undefined,
       logout: () => undefined,
-      getAccessToken: async () => 'test-token',
+      getAccessToken: authMocks.getAccessToken,
       hasRole: () => false,
       hasPermission: () => false,
     }),
@@ -48,6 +52,7 @@ const mockRoute = {
 }
 
 vi.mock('@/features/api/celiumRoutes', () => ({
+  canManageRoutes: vi.fn(() => Promise.resolve(true)),
   getRoute: vi.fn(() => Promise.resolve(mockRoute)),
   updateRoute: vi.fn(() => Promise.resolve(mockRoute)),
   deleteRoute: vi.fn(() => Promise.resolve()),
@@ -64,13 +69,24 @@ describe('ExploreRouteDetail', () => {
       </MemoryRouter>
     )
 
-    expect(await screen.findByText('Alpine Loop')).toBeInTheDocument()
-    const nameInput = screen.getByDisplayValue('Alpine Loop')
-    fireEvent.change(nameInput, { target: { value: 'Alpine Ridge' } })
-    fireEvent.submit(screen.getByText('Update route').closest('form') as HTMLFormElement)
+    expect(await screen.findByRole('heading', { name: 'Alpine Loop' })).toBeInTheDocument()
+    expect(screen.getByText('Loop summary')).toBeInTheDocument()
+    expect(screen.getByText('Route details')).toBeInTheDocument()
+    expect(screen.queryByText('Climbing style')).not.toBeInTheDocument()
+    expect(screen.queryByDisplayValue('Alpine Loop')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Delete route' })).not.toBeInTheDocument()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit summary' }))
+    const summaryInput = screen.getByDisplayValue('Loop summary')
+    fireEvent.change(summaryInput, { target: { value: 'Updated loop summary' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save summary' }))
 
     await waitFor(() => {
-      expect(updateRoute).toHaveBeenCalled()
+      expect(updateRoute).toHaveBeenCalledWith(
+        'route-1',
+        expect.objectContaining({ summary: 'Updated loop summary' }),
+        'test-token'
+      )
     })
   })
 })

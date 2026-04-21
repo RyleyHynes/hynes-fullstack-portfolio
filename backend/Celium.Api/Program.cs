@@ -212,8 +212,14 @@ IResult BuildMeResponse(ClaimsPrincipal user)
     });
 }
 
-app.MapGet("/users/me", BuildMeResponse).RequireAuthorization();
-app.MapGet("/me", BuildMeResponse).RequireAuthorization();
+app.MapGet("/users/me", BuildMeResponse)
+    .RequireAuthorization()
+    .Produces(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
+app.MapGet("/me", BuildMeResponse)
+    .RequireAuthorization()
+    .Produces(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
 var routes = app.MapGroup("/routes")
     .WithOpenApi()
@@ -223,13 +229,18 @@ routes.MapGet("/", async (CeliumDbContext db) =>
 {
     var results = await db.Routes.AsNoTracking().ToListAsync();
     return Results.Ok(results);
-});
+})
+    .Produces<List<RouteModel>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
 routes.MapGet("/{id:guid}", async (Guid id, CeliumDbContext db) =>
 {
     var route = await db.Routes.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
     return route is null ? Results.NotFound() : Results.Ok(route);
-});
+})
+    .Produces<RouteModel>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status404NotFound);
 
 routes.MapGet("/can-manage", () =>
 {
@@ -237,7 +248,11 @@ routes.MapGet("/can-manage", () =>
     {
         CanManage = true
     });
-}).RequireAuthorization("routes:write");
+})
+    .RequireAuthorization("routes:write")
+    .Produces(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden);
 
 routes.MapPost("/", async (CreateRouteRequest request, CeliumDbContext db) =>
 {
@@ -276,7 +291,12 @@ routes.MapPost("/", async (CreateRouteRequest request, CeliumDbContext db) =>
     db.Routes.Add(route);
     await db.SaveChangesAsync();
     return Results.Created($"/routes/{route.Id}", route);
-}).RequireAuthorization("routes:write");
+})
+    .RequireAuthorization("routes:write")
+    .Produces<RouteModel>(StatusCodes.Status201Created)
+    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden);
 
 routes.MapPut("/{id:guid}", async (Guid id, UpdateRouteRequest request, CeliumDbContext db) =>
 {
@@ -314,7 +334,13 @@ routes.MapPut("/{id:guid}", async (Guid id, UpdateRouteRequest request, CeliumDb
 
     await db.SaveChangesAsync();
     return Results.Ok(route);
-}).RequireAuthorization("routes:write");
+})
+    .RequireAuthorization("routes:write")
+    .Produces<RouteModel>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
+    .Produces(StatusCodes.Status404NotFound);
 
 routes.MapDelete("/{id:guid}", async (Guid id, CeliumDbContext db) =>
 {
@@ -327,6 +353,11 @@ routes.MapDelete("/{id:guid}", async (Guid id, CeliumDbContext db) =>
     db.Routes.Remove(route);
     await db.SaveChangesAsync();
     return Results.NoContent();
-}).RequireAuthorization("routes:write");
+})
+    .RequireAuthorization("routes:write")
+    .Produces(StatusCodes.Status204NoContent)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
+    .Produces(StatusCodes.Status404NotFound);
 
 app.Run();

@@ -1,19 +1,28 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { Moon, Sun, LogIn, LogOut } from 'lucide-react'
+import { LogIn, LogOut, Moon, Sun } from 'lucide-react'
 import Button from '@/components/buttons/Button'
 import IconButton from '@/components/buttons/IconButton'
+import Avatar from '@/components/user/Avatar'
 import { useAuth } from '@/auth'
 
 const navItems = [
   { label: 'Explore', to: '/apps/celium/explore' },
   { label: 'Plan', to: '/apps/celium/plan' },
-  { label: 'Shop', to: '/apps/celium/shop' },
 ]
 
 const CeliumLayout = () => {
   const [enabled, setEnabled] = useState(document.documentElement.classList.contains('dark'))
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const userMenuRef = useRef<HTMLDivElement>(null)
   const { isAuthenticated, user, login, logout } = useAuth()
+  const userDisplayName = user?.name ?? user?.email ?? 'User'
+  const userInitials = userDisplayName
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
 
   const toggleTheme = () => {
     const root = document.documentElement
@@ -22,6 +31,17 @@ const CeliumLayout = () => {
     else root.classList.remove('dark')
     setEnabled(next)
   }
+
+  useEffect(() => {
+    const handleDocumentMouseDown = (event: MouseEvent) => {
+      if (!userMenuRef.current?.contains(event.target as Node)) {
+        setIsUserMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleDocumentMouseDown)
+    return () => document.removeEventListener('mousedown', handleDocumentMouseDown)
+  }, [])
 
   return (
     <div className="min-h-screen">
@@ -45,28 +65,54 @@ const CeliumLayout = () => {
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            {isAuthenticated && user?.name ? (
-              <span className="text-xs text-slate-500">Hi, {user.name}</span>
-            ) : null}
-            <Link to="/apps/celium/api-docs" className="text-xs text-slate-500 hover:text-emerald-600 transition-colors">
-              API Docs
-            </Link>
             <Link to="/projects/celium" className="text-xs text-slate-500 hover:text-emerald-600 transition-colors">
               ← Portfolio
             </Link>
+            <IconButton
+              ariaLabel="Toggle dark mode"
+              icon={enabled ? <Sun size={16} /> : <Moon size={16} />}
+              onClick={toggleTheme}
+            />
             {isAuthenticated ? (
-              <Button
-                className="inline-flex items-center gap-1 rounded-full border border-slate-300/80 dark:border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
-                type="button"
-                variant="ghost"
-                onClick={logout}
-              >
-                <LogOut size={14} />
-                Sign out
-              </Button>
+              <div className="relative" ref={userMenuRef}>
+                <Button
+                  aria-expanded={isUserMenuOpen}
+                  aria-haspopup="menu"
+                  aria-label="Open user menu"
+                  className="rounded-full p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                  type="button"
+                  variant="unstyled"
+                  onClick={() => setIsUserMenuOpen((current) => !current)}
+                >
+                  <Avatar initials={userInitials} />
+                </Button>
+                {isUserMenuOpen ? (
+                  <div
+                    className="absolute right-0 mt-2 w-56 rounded-xl border border-slate-200/80 bg-white p-2 shadow-soft dark:border-white/10 dark:bg-slate-900"
+                    role="menu"
+                  >
+                    <div className="border-b border-slate-200/80 px-3 py-2 text-sm font-medium text-slate-700 dark:border-white/10 dark:text-slate-200">
+                      {userDisplayName}
+                    </div>
+                    <Button
+                      className="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-600 hover:bg-slate-100 hover:text-emerald-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-emerald-200"
+                      role="menuitem"
+                      type="button"
+                      variant="unstyled"
+                      onClick={() => {
+                        setIsUserMenuOpen(false)
+                        logout()
+                      }}
+                    >
+                      <LogOut size={14} />
+                      Sign out
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
             ) : (
               <Button
-                className="inline-flex items-center gap-1 rounded-full border border-slate-300/80 dark:border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+                className="inline-flex items-center gap-1 rounded-full border border-slate-300/80 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:border-emerald-500 hover:text-emerald-600 dark:border-slate-700 dark:text-slate-200"
                 type="button"
                 variant="ghost"
                 onClick={() => void login({ returnTo: '/apps/celium/explore', mode: 'signin' })}
@@ -75,11 +121,6 @@ const CeliumLayout = () => {
                 Sign in
               </Button>
             )}
-            <IconButton
-              ariaLabel="Toggle dark mode"
-              icon={enabled ? <Sun size={16} /> : <Moon size={16} />}
-              onClick={toggleTheme}
-            />
           </div>
         </div>
       </header>

@@ -115,7 +115,7 @@ export const projects = [
       'Built on connection.',
     features: [
       'Route discovery with filters, waypoints, and collaborative planning',
-      'Integrated gear shop with inventory tracking and packing templates',
+      'Shared route status between exploration and trip planning',
       'Trip context and scenario modeling based on conditions and past reports'
     ],
     links: [
