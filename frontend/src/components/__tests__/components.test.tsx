@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 import Button from '@/components/buttons/Button'
 import IconButton from '@/components/buttons/IconButton'
 import Badge from '@/components/data-display/Badge'
@@ -50,6 +50,11 @@ const sampleRoute = {
   status: 'Published',
   progress: 'Todo',
 } satisfies RouteModel
+
+const LocationProbe = () => {
+  const location = useLocation()
+  return <span data-testid="location">{location.pathname}</span>
+}
 
 describe('Reusable components', () => {
   it('renders layout blocks and interactions', () => {
@@ -131,37 +136,30 @@ describe('Reusable components', () => {
   })
 
   it('renders cards and route card actions', () => {
-    const onView = vi.fn()
-    const onEdit = vi.fn()
     const onDelete = vi.fn()
-    const onSelect = vi.fn()
 
     const { container } = render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={['/apps/celium/explore']}>
         <RouteCard
-          route={sampleRoute}
-          href="/apps/celium/explore/routes/route-1"
-          onView={onView}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onSelect={onSelect}
           coverImage="cover.jpg"
+          href="/apps/celium/explore/routes/route-1"
+          onDelete={onDelete}
+          route={sampleRoute}
         />
+        <LocationProbe />
       </MemoryRouter>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'View' }))
-    expect(onView).toHaveBeenCalledWith(sampleRoute)
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
-    expect(onEdit).toHaveBeenCalledWith(sampleRoute)
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
     expect(onDelete).toHaveBeenCalledWith(sampleRoute)
-    const selectable = container.querySelector('[role="button"]')
+    expect(screen.getByTestId('location')).toHaveTextContent('/apps/celium/explore')
+
+    const selectable = container.querySelector('[role="link"][tabindex="0"]')
     if (!selectable) {
       throw new Error('Route card select element missing')
     }
     fireEvent.keyDown(selectable, { key: 'Enter' })
-    expect(onSelect).toHaveBeenCalledWith(sampleRoute)
+    expect(screen.getByTestId('location')).toHaveTextContent('/apps/celium/explore/routes/route-1')
   })
 
   it('renders buttons, stats, and user chips', () => {
