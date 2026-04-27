@@ -1,12 +1,10 @@
-import { useContext, useMemo } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Button from '@/components/buttons/Button'
 import SectionHeader from '@/components/layout/SectionHeader'
 import { AuthContext } from '@/auth/AuthContext'
 import {
   ActivityDetailPanel,
-  CompletePlanPanel,
-  NotesPanel,
   PlanStatusBadge,
   PreparationPanel,
   RouteForecast,
@@ -18,8 +16,9 @@ import { getPlanDateLabel } from '@/celium/types/plan'
 const PlanTripDetail = () => {
   const { tripId } = useParams()
   const auth = useContext(AuthContext)
+  const getAccessToken = useCallback(() => auth?.getAccessToken() ?? Promise.resolve(null), [auth])
   const {
-    completeSelectedPlan,
+    createChecklistItem,
     handleMoveActivity,
     handleReorderDays,
     isLoading,
@@ -28,10 +27,10 @@ const PlanTripDetail = () => {
     selectedPlan,
     setSelectedActivityId,
     setSelectedDayId,
+    updateChecklistItem,
     updateChecklistStatus,
-    updateNotes,
   } = usePlanWorkspace({
-    getAccessToken: auth?.getAccessToken ?? (async () => null),
+    getAccessToken,
     planId: tripId,
   })
 
@@ -73,37 +72,38 @@ const PlanTripDetail = () => {
         ← Back to Plan
       </Link>
 
-      <SectionHeader
-        title={selectedPlan.name}
-        subtitle="Trip workspace centered on timeline, preparation, and uncertainty."
-      />
-
-      <div className="card p-5 grid gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm text-slate-500">
-              {getPlanDateLabel(selectedPlan.metadata.startDate, selectedPlan.metadata.endDate)}
-            </p>
-          </div>
-          <PlanStatusBadge status={selectedPlan.status} />
-        </div>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(520px,1.1fr)] lg:items-center">
+        <SectionHeader
+          title={selectedPlan.name}
+          subtitle="Trip workspace centered on timeline and preparation."
+        />
         {selectedRouteActivity ? (
           <RouteForecast
             routeLabel={selectedRouteActivity.title}
             seedKey={selectedRouteActivity.routeId ?? selectedRouteActivity.id}
           />
         ) : (
-          <p className="text-sm text-slate-500">Add a route activity to see its mock 7-day forecast.</p>
+          <p className="rounded-lg bg-white/70 p-2.5 text-sm text-slate-500 shadow-soft dark:bg-white/5">
+            Add a route activity to see critical forecast signals.
+          </p>
         )}
       </div>
 
-      <div className="grid xl:grid-cols-[minmax(0,2.1fr)_minmax(320px,1fr)] gap-6 items-start">
-        <div className="grid gap-5">
-          <section className="card p-5 grid gap-4">
+      <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
+        <aside className="card p-5 grid gap-4 xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Timeline</p>
+              <p className="mt-1 text-sm text-slate-500">
+                {getPlanDateLabel(selectedPlan.metadata.startDate, selectedPlan.metadata.endDate)}
+              </p>
+            </div>
+            <PlanStatusBadge status={selectedPlan.status} />
+          </div>
+
+          <div className="grid gap-3">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Timeline</p>
-              </div>
+              <p className="text-sm font-semibold">Trip days</p>
               <Button type="button" variant="text">Add day</Button>
             </div>
             <TimelineBoard
@@ -117,30 +117,24 @@ const PlanTripDetail = () => {
               onSelectDay={setSelectedDayId}
               plan={selectedPlan}
             />
-          </section>
+          </div>
+        </aside>
 
+        <div className="grid gap-6">
           <PreparationPanel
+            plan={selectedPlan}
+            onCreateTask={(label) => {
+              void createChecklistItem(label)
+            }}
             onSetStatus={(itemId, status) => {
               void updateChecklistStatus(itemId, status)
             }}
-            plan={selectedPlan}
+            onUpdateTask={(itemId, updates) => {
+              void updateChecklistItem(itemId, updates)
+            }}
           />
-        </div>
 
-        <div className="grid gap-5">
           <ActivityDetailPanel activity={selectedActivity} day={selectedDay} />
-          <NotesPanel
-            onUpdateNotes={(category, value) => {
-              void updateNotes(category, value)
-            }}
-            plan={selectedPlan}
-          />
-          <CompletePlanPanel
-            onComplete={(reflection) => {
-              void completeSelectedPlan(reflection)
-            }}
-            plan={selectedPlan}
-          />
         </div>
       </div>
     </section>

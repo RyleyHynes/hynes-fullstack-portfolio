@@ -130,11 +130,13 @@ export const listTodoRoutesForPlanning = async (accessToken?: string) => {
   return routes.filter((route) => route.progress === 'Todo')
 }
 
+export const listRoutesForPlanning = async (accessToken?: string) => listRoutes(accessToken)
+
 export const createPlanFromRoute = async (route: RouteModel) => {
   const now = isoNow()
   const dayId = `day-${route.id}`
   const plan: PlanModel = {
-    id: `plan-${route.id}-${Date.now()}`,
+    id: `plan-${route.id}`,
     name: `${route.name} Plan`,
     status: 'Draft',
     createdAt: now,
@@ -213,4 +215,3 @@ export const completePlan = async (planId: string, reflection: string) => {
     updatedAt: isoNow(),
   })
 }
-

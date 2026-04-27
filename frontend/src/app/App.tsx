@@ -24,8 +24,6 @@ import Explore from '@/celium/Explore'
 import ExploreRouteDetail from '@/celium/ExploreRouteDetail'
 import Plan from '@/celium/Plan'
 import PlanTripDetail from '@/celium/PlanTripDetail'
-import Shop from '@/celium/Shop'
-import ShopProductDetail from '@/celium/ShopProductDetail'
 
 /**
  * Controls the Tailwind dark-mode class on the root document element.
@@ -64,7 +62,8 @@ const Page = ({ children }: { children: React.ReactNode }) => (
 const App = () => {
   const { enabled, setEnabled } = useDarkMode()
   const location = useLocation()
-  const isCeliumApp = location.pathname.startsWith('/apps/celium')
+  const isCeliumApiDocs = location.pathname === '/apps/celium/api-docs'
+  const isCeliumApp = location.pathname.startsWith('/apps/celium') && !isCeliumApiDocs
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [location.pathname])
@@ -137,9 +136,6 @@ const App = () => {
               <Route path="explore/routes/:routeId" element={<ExploreRouteDetail />} />
               <Route path="plan" element={<Plan />} />
               <Route path="plan/trips/:tripId" element={<PlanTripDetail />} />
-              <Route path="shop" element={<Shop />} />
-              <Route path="shop/products/:productId" element={<ShopProductDetail />} />
-              <Route path="api-docs" element={<ApiDocs />} />
             </Route>
           </Routes>
         ) : (
@@ -149,6 +145,7 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/projects" element={<Navigate to="/projects/celium" replace />} />
               <Route path="/projects/celium" element={<CeliumProject />} />
+              <Route path="/apps/celium/api-docs" element={<ApiDocs />} />
               <Route path="/ui" element={<ComponentGallery />} />
               <Route path="/career" element={<Career />} />
               <Route path="/about" element={<AboutMe />} />

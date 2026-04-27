@@ -67,4 +67,15 @@ describe('ApiDocs', () => {
     fireEvent.click(screen.getByText('Swagger UI (read-only)'))
     expect(screen.getByTitle('Celium Swagger UI')).toBeInTheDocument()
   })
+
+  it('shows bundled docs when the live schema is unavailable', async () => {
+    const fetchMock = vi.mocked(fetch)
+    fetchMock.mockRejectedValue(new Error('Failed to fetch'))
+
+    render(<ApiDocs />)
+
+    expect(await screen.findByText('Live API schema is unavailable. Showing the bundled Celium API reference.')).toBeInTheDocument()
+    expect(screen.getByText('List routes')).toBeInTheDocument()
+    expect(screen.getByText('Create route')).toBeInTheDocument()
+  })
 })

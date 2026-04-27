@@ -16,7 +16,7 @@ export const prepareAuthHeaders = (headers: Headers, token: string | null = loca
 }
 
 /**
- * RTK Query slice that centralizes auth, tracker, training, and shop endpoints.
+ * RTK Query slice that centralizes auth, tracker, and training endpoints.
  * Adds bearer auth headers when tokens exist in `localStorage`.
  */
 export const loginRequest = (body: { username: string; password: string }) => ({
@@ -38,17 +38,6 @@ export const generatePlanRequest = (body: { name: string; start_date: string; we
   method: 'POST',
   body,
 })
-export const productsRequest = () => 'shop/products/'
-export const createOrderRequest = (body: { items: { product_id: number; quantity: number }[] }) => ({
-  url: 'shop/orders/',
-  method: 'POST',
-  body,
-})
-export const payOrderRequest = ({ id, ...body }: { id: number; token?: string }) => ({
-  url: `shop/orders/${id}/pay/`,
-  method: 'POST',
-  body,
-})
 
 export const portfolioApi = createApi({
   reducerPath: 'portfolioApi',
@@ -56,7 +45,7 @@ export const portfolioApi = createApi({
     baseUrl,
     prepareHeaders: (headers) => prepareAuthHeaders(headers),
   }),
-  tagTypes: ['Board','Column','Card','Plan','Workout','Metric','Product','Order'],
+  tagTypes: ['Board','Column','Card','Plan','Workout','Metric'],
   endpoints: (b) => ({
     /** Exchange credentials for JWT access + refresh tokens. */
     login: b.mutation<{access:string;refresh:string}, {username:string;password:string}>({ query: loginRequest }),
@@ -70,18 +59,9 @@ export const portfolioApi = createApi({
     moveCard: b.mutation<any, {id:number; column:number; position:number}>({ query: moveCardRequest }),
     /** Generate a training plan by name, start date, and duration. */
     generatePlan: b.mutation<any, {name:string;start_date:string;weeks:number}>({ query: generatePlanRequest }),
-    /** List storefront products available for purchase. */
-    products: b.query<any[], void>({ query: productsRequest }),
-    /** Place an order with the selected product items. */
-    createOrder: b.mutation<any, {items:{product_id:number;quantity:number}[]}>({
-      query: createOrderRequest
-    }),
-    /** Process payment for an existing order. */
-    payOrder: b.mutation<any, {id:number; token?:string}>({ query: payOrderRequest }),
   })
 })
 export const {
   useLoginMutation, useMeQuery, useBoardsQuery, useCreateBoardMutation,
-  useMoveCardMutation, useGeneratePlanMutation, useProductsQuery,
-  useCreateOrderMutation, usePayOrderMutation
+  useMoveCardMutation, useGeneratePlanMutation
 } = portfolioApi

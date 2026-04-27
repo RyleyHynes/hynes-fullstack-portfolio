@@ -48,6 +48,165 @@ const resolveBaseUrl = () => (
     ?? (import.meta.env.PROD ? '/api/celium' : 'http://localhost:5270')
 )
 
+const routeRequestSchema: ApiSchema = {
+  type: 'object',
+  required: [
+    'name',
+    'summary',
+    'activityType',
+    'difficulty',
+    'distanceMiles',
+    'elevationGainFt',
+    'loopType',
+    'startLatitude',
+    'startLongitude',
+    'endLatitude',
+    'endLongitude',
+    'status',
+    'progress',
+  ],
+  properties: {
+    name: { type: 'string' },
+    summary: { type: 'string' },
+    description: { type: 'string' },
+    activityType: { type: 'string', enum: ['Hiking', 'TrailRunning', 'RockClimbing'] },
+    climbingStyle: { type: 'string', enum: ['Sport', 'Trad', 'Bouldering', 'Ice'] },
+    climbingGrade: { type: 'string' },
+    difficulty: { type: 'string', enum: ['Easy', 'Moderate', 'Hard', 'Expert'] },
+    distanceMiles: { type: 'number', format: 'double' },
+    elevationGainFt: { type: 'integer', format: 'int32' },
+    elevationLossFt: { type: 'integer', format: 'int32' },
+    maxElevationFt: { type: 'integer', format: 'int32' },
+    minElevationFt: { type: 'integer', format: 'int32' },
+    estimatedTimeMinutes: { type: 'integer', format: 'int32' },
+    loopType: { type: 'string', enum: ['Loop', 'OutAndBack', 'PointToPoint'] },
+    startLatitude: { type: 'number', format: 'double' },
+    startLongitude: { type: 'number', format: 'double' },
+    endLatitude: { type: 'number', format: 'double' },
+    endLongitude: { type: 'number', format: 'double' },
+    status: { type: 'string', enum: ['Published', 'Archived'] },
+    progress: { type: 'string', enum: ['Todo', 'Completed'] },
+    publishedAt: { type: 'string', format: 'date-time' },
+  },
+}
+
+const fallbackSpec: ApiSpec = {
+  info: {
+    title: 'Celium API',
+    version: 'v1',
+    description: 'Reference for Celium route, user, and permission endpoints.',
+  },
+  servers: [{ url: 'http://localhost:5270' }],
+  paths: {
+    '/users/me': {
+      get: {
+        summary: 'Get current user profile',
+        tags: ['Users'],
+        responses: {
+          200: { description: 'Current user claims and permissions.' },
+          401: { description: 'Missing or invalid bearer token.' },
+        },
+      },
+    },
+    '/me': {
+      get: {
+        summary: 'Get current user profile',
+        tags: ['Users'],
+        responses: {
+          200: { description: 'Current user claims and permissions.' },
+          401: { description: 'Missing or invalid bearer token.' },
+        },
+      },
+    },
+    '/routes': {
+      get: {
+        summary: 'List routes',
+        tags: ['Routes'],
+        responses: {
+          200: { description: 'Route collection.' },
+          401: { description: 'Missing or invalid bearer token.' },
+        },
+      },
+      post: {
+        summary: 'Create route',
+        tags: ['Routes'],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: routeRequestSchema,
+            },
+          },
+        },
+        responses: {
+          201: { description: 'Route created.' },
+          400: { description: 'Invalid request payload.' },
+          401: { description: 'Missing or invalid bearer token.' },
+          403: { description: 'Authenticated but missing route write permission.' },
+        },
+      },
+    },
+    '/routes/{id}': {
+      get: {
+        summary: 'Get route by id',
+        tags: ['Routes'],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        responses: {
+          200: { description: 'Route detail.' },
+          401: { description: 'Missing or invalid bearer token.' },
+          404: { description: 'Route not found.' },
+        },
+      },
+      put: {
+        summary: 'Update route',
+        tags: ['Routes'],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: routeRequestSchema,
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Route updated.' },
+          400: { description: 'Invalid request payload.' },
+          401: { description: 'Missing or invalid bearer token.' },
+          403: { description: 'Authenticated but missing route write permission.' },
+          404: { description: 'Route not found.' },
+        },
+      },
+      delete: {
+        summary: 'Delete route',
+        tags: ['Routes'],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } },
+        ],
+        responses: {
+          204: { description: 'Route deleted.' },
+          401: { description: 'Missing or invalid bearer token.' },
+          403: { description: 'Authenticated but missing route write permission.' },
+          404: { description: 'Route not found.' },
+        },
+      },
+    },
+    '/routes/can-manage': {
+      get: {
+        summary: 'Check route write permission',
+        tags: ['Routes'],
+        responses: {
+          200: { description: 'Permission result.' },
+          401: { description: 'Missing or invalid bearer token.' },
+          403: { description: 'Authenticated but missing route write permission.' },
+        },
+      },
+    },
+  },
+}
+
 const methodStyles: Record<string, string> = {
   get: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-200',
   post: 'bg-sky-500/10 text-sky-700 dark:text-sky-200',
@@ -86,6 +245,7 @@ const buildSchemaRows = (schema: ApiSchema | undefined, spec?: ApiSpec) => {
 const ApiDocs = () => {
   const [spec, setSpec] = useState<ApiSpec | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showSwagger, setShowSwagger] = useState(false)
 
@@ -93,6 +253,7 @@ const ApiDocs = () => {
     const load = async () => {
       setIsLoading(true)
       setError(null)
+      setNotice(null)
       try {
         const response = await fetch(`${resolveBaseUrl()}/swagger/v1/swagger.json`)
         if (!response.ok) {
@@ -100,8 +261,9 @@ const ApiDocs = () => {
         }
         const data = await response.json()
         setSpec(data)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unable to load API schema.')
+      } catch {
+        setSpec(fallbackSpec)
+        setNotice('Live API schema is unavailable. Showing the bundled Celium API reference.')
       } finally {
         setIsLoading(false)
       }
@@ -149,6 +311,9 @@ const ApiDocs = () => {
       ) : null}
       {error ? (
         <Card className="p-4 text-sm text-rose-600">{error}</Card>
+      ) : null}
+      {notice ? (
+        <Card className="p-4 text-sm text-amber-700 dark:text-amber-200">{notice}</Card>
       ) : null}
 
       {showSwagger ? (
