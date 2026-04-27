@@ -155,6 +155,8 @@ describe('Plan pages', () => {
     expect(screen.queryByText('Duplicate Disappointment Cleaver Plan')).not.toBeInTheDocument()
     expect(screen.getByText('Days')).toBeInTheDocument()
     expect(screen.getByText('In Progress')).toBeInTheDocument()
+    expect(screen.getByText('Selected Plan')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Disappointment Cleaver Plan' })).toBeInTheDocument()
     expect(screen.getByAltText('Disappointment Cleaver Plan route preview')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Completed (1)' }))
