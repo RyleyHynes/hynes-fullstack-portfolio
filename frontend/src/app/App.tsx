@@ -64,6 +64,8 @@ const App = () => {
   const location = useLocation()
   const isCeliumApiDocs = location.pathname === '/apps/celium/api-docs'
   const isCeliumApp = location.pathname.startsWith('/apps/celium') && !isCeliumApiDocs
+  // Surface the exact frontend build in the shared footer for quick support/debug checks.
+  const appBuildLabel = `v${__APP_VERSION__}${__APP_GIT_SHA__ && __APP_GIT_SHA__ !== 'dev' ? ` (${__APP_GIT_SHA__})` : ''}`
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [location.pathname])
@@ -166,11 +168,12 @@ const App = () => {
                 Open to relocation
               </span>
             </div>
-            <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
               <a className="navlink" href={`mailto:${profile.email}`}><Mail className="inline-block mr-1" size={16}/> {profile.email}</a>
               <a className="navlink" href={profile.github} target="_blank" rel="noreferrer">GitHub</a>
               <a className="navlink" href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
             </div>
+            <div className="text-xs text-slate-400 sm:ml-auto">Build {appBuildLabel}</div>
           </div>
         </footer>
       ) : null}

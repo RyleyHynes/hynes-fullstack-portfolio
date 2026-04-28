@@ -4,6 +4,17 @@ import RequireAuth from '@/auth/RequireAuth'
 import RequireRole from '@/auth/RequireRole'
 import { AuthContext, type AuthContextValue } from '@/auth/AuthContext'
 
+vi.mock('@/auth/authConfig', () => ({
+  authEnabled: true,
+  authConfig: {
+    audience: '',
+    clientId: 'test-client',
+    domain: 'test-domain',
+    permissionsClaim: 'permissions',
+    roleClaim: 'https://celium.app/roles',
+  },
+}))
+
 const mockAuth: AuthContextValue = {
   isAuthenticated: true,
   isLoading: false,

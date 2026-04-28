@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect } from 'react'
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react'
-import { authConfig, authEnabled } from './authConfig'
-import { AuthContext } from './AuthContext'
+import { AuthContext } from '@/auth/AuthContext'
+import { authConfig, authEnabled } from '@/auth/authConfig'
 
 type AuthProviderProps = {
   children: ReactNode
