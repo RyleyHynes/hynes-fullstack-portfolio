@@ -1,12 +1,34 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { viteCommonjs } from '@originjs/vite-plugin-commonjs'
+import { execSync } from 'node:child_process'
 import path from 'path'
+import packageJson from './package.json'
+
+/**
+ * Resolves the current commit for build labeling.
+ * CI can override this with `VITE_GIT_SHA`; local builds fall back to git or `dev`.
+ */
+const getGitSha = () => {
+  try {
+    return execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim()
+  } catch {
+    return 'dev'
+  }
+}
+
+const appVersion = packageJson.version
+const gitSha = process.env.VITE_GIT_SHA ?? getGitSha()
 
 export default defineConfig({
   base: '/hynes-portfolio-static/',
   build: {
     manifest: true,
+  },
+  define: {
+    // Expose release metadata as compile-time constants for lightweight UI display.
+    __APP_GIT_SHA__: JSON.stringify(gitSha),
+    __APP_VERSION__: JSON.stringify(appVersion),
   },
   css: {
     preprocessorOptions: {

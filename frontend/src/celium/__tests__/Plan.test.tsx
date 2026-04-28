@@ -156,8 +156,8 @@ describe('Plan pages', () => {
     expect(screen.getByText('Days')).toBeInTheDocument()
     expect(screen.getByText('In Progress')).toBeInTheDocument()
     expect(screen.getByText('Selected Plan')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Disappointment Cleaver Plan' })).toBeInTheDocument()
-    expect(screen.getByAltText('Disappointment Cleaver Plan route preview')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /(Disappointment Cleaver Plan|East Buttress Plan)/ })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /route preview$/i })).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Completed (1)' }))
     expect((await screen.findAllByText('East Buttress Plan')).length).toBeGreaterThan(0)

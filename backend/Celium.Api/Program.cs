@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,12 +15,27 @@ using RouteModel = Celium.Api.Models.Route;
 var builder = WebApplication.CreateBuilder(args);
 var defaultLandscapeTypeId = Guid.Parse("00000000-0000-0000-0000-000000000001");
 var defaultRegionId = Guid.Parse("00000000-0000-0000-0000-000000000010");
+var assembly = typeof(Program).Assembly;
+var informationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+var serviceVersion = informationalVersion?.Split('+')[0]
+    ?? assembly.GetName().Version?.ToString()
+    ?? "0.1.0";
+var gitCommit = builder.Configuration["App:Commit"]
+    ?? Environment.GetEnvironmentVariable("APP_COMMIT")
+    ?? Environment.GetEnvironmentVariable("GIT_SHA")
+    ?? informationalVersion?.Split('+').Skip(1).FirstOrDefault()
+    ?? "dev";
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Celium API",
+        Version = "v1"
+    });
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
@@ -134,7 +150,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Celium API v1");
+    });
 }
 
 app.UseHttpsRedirection();
@@ -182,6 +201,30 @@ app.UseStatusCodePages(async context =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+object BuildVersionPayload() => new
+{
+    service = "Celium.Api",
+    version = serviceVersion,
+    commit = gitCommit,
+    apiVersion = "v1",
+    environment = app.Environment.EnvironmentName
+};
+
+app.MapGet("/version", () => Results.Ok(BuildVersionPayload()))
+    .AllowAnonymous()
+    .Produces(StatusCodes.Status200OK);
+
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "ok",
+    service = "Celium.Api",
+    version = serviceVersion,
+    commit = gitCommit,
+    apiVersion = "v1"
+}))
+    .AllowAnonymous()
+    .Produces(StatusCodes.Status200OK);
 
 IResult BuildMeResponse(ClaimsPrincipal user)
 {

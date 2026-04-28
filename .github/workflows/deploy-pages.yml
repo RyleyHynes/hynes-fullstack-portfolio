@@ -1,8 +1,8 @@
-name: Deploy front-end to GitHub Pages
+name: Deploy Frontend to GitHub Pages
 
 on:
   push:
-    branches: [ main ]   # change if you deploy from another branch
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -15,24 +15,82 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Frontend lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Frontend typecheck
+        working-directory: frontend
+        run: npm run typecheck
+
+      - name: Frontend test
+        working-directory: frontend
+        run: npm run test
+
+      - name: Backend restore
+        working-directory: backend
+        run: dotnet restore Portfolio.sln
+
+      - name: Backend build
+        working-directory: backend
+        run: dotnet build Portfolio.sln --configuration Release --no-restore
+
+      - name: Backend test
+        working-directory: backend
+        run: dotnet test Portfolio.sln --configuration Release --no-build
+
   build:
+    name: Build Frontend Artifact
+    needs: quality-checks
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - run: npm ci
-      - run: npm run build    # creates dist/ (Vite) or build/ (CRA)
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/dist # use frontend/build if CRA
+          path: frontend/dist
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
