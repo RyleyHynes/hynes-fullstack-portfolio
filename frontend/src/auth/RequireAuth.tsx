@@ -1,8 +1,8 @@
 import { type ReactNode, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Button from '@/components/buttons/Button'
-import { authEnabled } from './authConfig'
-import { useAuth } from './AuthContext'
+import { useAuth } from '@/auth/AuthContext'
+import { authEnabled } from '@/auth/authConfig'
 
 type RequireAuthProps = {
   children: ReactNode
