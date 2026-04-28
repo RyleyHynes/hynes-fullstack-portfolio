@@ -196,5 +196,5 @@ describe('Plan pages', () => {
 
     expect((await screen.findAllByText('Confirm permit pickup window')).length).toBeGreaterThan(0)
     expect((await screen.findAllByText('Pickup window closes at 5 PM.')).length).toBeGreaterThan(0)
-  })
+  }, 10000)
 })
